@@ -23,7 +23,7 @@ function setupAllCSEKeys() {
   // CSE API Key
   // ⚠️ 注意：此 API Key 直接存儲為 GOOGLE_CSE_API_KEY（不加 API_KEY_ 前綴）
   // ⚠️ 重要：Google API Key 應以 "AIza" 開頭（大寫 I），如果看到 "Alza"（小寫 l）請修正
-  const CSE_API_KEY = "AIzaSyDrs__Z1eqvLkfgHOgdAZQP-7A3gjsc6lI";  // 更新：2026-01-16
+  const CSE_API_KEY = "xxxxx";  // 更新：2026-01-16
   
   // 所有 CSE CX ID
   const CSE_KEYS = {
