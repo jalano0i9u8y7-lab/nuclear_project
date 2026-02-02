@@ -1,0 +1,41 @@
+[
+  {
+    "fix_id": "fix_20260126_001",
+    "timestamp": "2026-01-26T14:30:00.000Z",
+    "run_token": "px_20260126_143022_a3f",
+    "stage": "P2",
+    "error_fingerprint": "STACK_TypeError_processP2:45_analyzeEvidence:123",
+    "status": "PENDING",
+    "task_package": {
+      "error_details": {
+        "message": "Cannot read property 'evidence' of undefined",
+        "stacktrace": "TypeError: Cannot read property 'evidence' of undefined\n    at processP2 (21_P2_FUNDAMENTAL_ANALYSIS.js:45:23)\n    at analyzeEvidence (21_P2_FUNDAMENTAL_ANALYSIS.js:123:15)\n    at main (21_P2_FUNDAMENTAL_ANALYSIS.js:5:10)",
+        "validator_report": {
+          "l0_errors": [
+            {
+              "rule": "MISSING_COLUMN",
+              "column": "evidence",
+              "sheet": "P2_Output"
+            }
+          ],
+          "l1_errors": []
+        },
+        "sheet_diff": {
+          "missing_columns": ["evidence"],
+          "unexpected_columns": [],
+          "empty_rate": {
+            "safety_score": 0.12
+          }
+        }
+      },
+      "code_context": {
+        "file": "src/21_P2_FUNDAMENTAL_ANALYSIS.js",
+        "function": "processP2",
+        "line_number": 45,
+        "surrounding_code": "function processP2(ticker, data) {\n  const result = {};\n  // ...\n  result.evidence = data.evidence;  // ← 錯誤發生在這裡\n  return result;\n}"
+      },
+      "dependencies": ["P0_5_SEAL_xxx", "P1_SEAL_yyy"],
+      "suggested_fix": "可能是 data 物件未正確初始化，導致 data.evidence 為 undefined。需要檢查 data 物件的來源，確保在調用 processP2 前 data 已正確初始化。"
+    }
+  }
+]

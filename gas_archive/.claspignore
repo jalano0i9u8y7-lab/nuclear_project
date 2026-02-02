@@ -1,0 +1,19 @@
+# Clasp ignore file
+# 排除備份目錄和不需要上傳的檔案
+
+# 備份目錄
+backup_gas_*/
+
+# 測試檔案（排除一般測試檔案）
+**/test_*.js
+**/*_test.js
+**/*_TEST.js
+
+# 文檔檔案
+*.md
+*.txt
+
+# 其他不需要的檔案
+.git/
+node_modules/
+*.log

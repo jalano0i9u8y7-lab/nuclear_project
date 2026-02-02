@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <title>Nuclear Project SSOT V7.1 控制面板</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #333;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #1a73e8;
+    }
+    
+    .section {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #202124;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    
+    .btn:hover {
+      background: #1557b0;
+    }
+    
+    .btn:active {
+      background: #0d47a1;
+    }
+    
+    .btn-secondary {
+      background: #5f6368;
+    }
+    
+    .btn-secondary:hover {
+      background: #3c4043;
+    }
+    
+    .btn-danger {
+      background: #ea4335;
+    }
+    
+    .btn-danger:hover {
+      background: #c5221f;
+    }
+    
+    .status {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 13px;
+    }
+    
+    .status-info {
+      background: #e8f0fe;
+      color: #1967d2;
+    }
+    
+    .status-success {
+      background: #e6f4ea;
+      color: #137333;
+    }
+    
+    .status-warning {
+      background: #fef7e0;
+      color: #b06000;
+    }
+    
+    .status-error {
+      background: #fce8e6;
+      color: #c5221f;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #5f6368;
+    }
+    
+    input[type="text"],
+    input[type="url"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 5px;
+    }
+    
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .strategy-item {
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: #fafafa;
+    }
+    
+    .strategy-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .strategy-ticker {
+      font-weight: 600;
+      font-size: 16px;
+      color: #202124;
+    }
+    
+    .strategy-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .badge-increase {
+      background: #e6f4ea;
+      color: #137333;
+    }
+    
+    .badge-decrease {
+      background: #fce8e6;
+      color: #c5221f;
+    }
+    
+    .badge-hold {
+      background: #fef7e0;
+      color: #b06000;
+    }
+    
+    .strategy-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+      width: auto;
+      margin: 0;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #5f6368;
+    }
+    
+    .loading.active {
+      display: block;
+    }
+    
+    .notification-item {
+      padding: 10px;
+      border-left: 4px solid #ea4335;
+      background: #fce8e6;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    
+    .notification-title {
+      font-weight: 600;
+      color: #c5221f;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Nuclear Project SSOT V7.1</h1>
+    
+    <!-- 主頁面 -->
+    <div id="mainPage">
+      <!-- 一鍵執行 -->
+      <div class="section">
+        <div class="section-title">🚀 一鍵執行完整流程</div>
+        <div id="executeStatus" class="status status-info" style="display: none;"></div>
+        <button class="btn" onclick="executeFullPipeline()">執行完整流程（P0 → P4）</button>
+        <button class="btn btn-secondary" onclick="executeFromP2()">從 P2 開始執行（使用現有 P1 資料）</button>
+        <button class="btn btn-secondary" onclick="showPage('strategyPage')">查看本週策略</button>
+        <button class="btn btn-secondary" onclick="showPage('humanSignalPage')">輸入 Human Signal</button>
+        <button class="btn btn-secondary" onclick="showPage('notificationsPage')">緊急通知</button>
+      </div>
+      
+      <!-- 🔍 數據流測試系統 ⭐ V8.0 新增 -->
+      <div class="section">
+        <div class="section-title">🔍 數據流測試系統（V8.0）</div>
+        <div id="dataflowTestStatus" class="status status-info" style="display: none;"></div>
+        <div style="margin-bottom: 10px; font-size: 12px; color: #5f6368;">
+          <strong>測試說明：</strong>測試所有數據收集是否正常（CSE 白名單或爬蟲），檢查資料正確性和筆數合理性。
+        </div>
+        <button class="btn" onclick="runDataflowTest('ALL')">🔍 測試全部數據流</button>
+        <button class="btn btn-secondary" onclick="runDataflowTest('P2')">🔍 測試 P2 數據流</button>
+        <button class="btn btn-secondary" onclick="runDataflowTest('P2_5')">🔍 測試 P2.5 數據流</button>
+        <button class="btn btn-secondary" onclick="runDataflowTest('P3')">🔍 測試 P3 數據流</button>
+        <button class="btn btn-secondary" onclick="runDataflowTest('P5_DAILY')">🔍 測試 P5 Daily 數據流</button>
+        <button class="btn btn-secondary" onclick="runDataflowTest('P5_WEEKLY')">🔍 測試 P5 Weekly 數據流</button>
+        <button class="btn btn-secondary" onclick="testInstitutionalRatings()">⭐ V8.9 測試機構評級收集</button>
+        <button class="btn btn-secondary" onclick="testNewsQuality()">⭐ V8.9 測試新聞品質</button>
+        <div id="dataflowTestResult" style="margin-top: 15px; display: none;"></div>
+      </div>
+      
+      <!-- 🧪 輕測試系統 ⭐ V8.0 新增 -->
+      <div class="section">
+        <div class="section-title">🧪 輕測試系統（V8.0）</div>
+        <div id="testStatus" class="status status-info" style="display: none;"></div>
+        <div style="margin-bottom: 10px; font-size: 12px; color: #5f6368;">
+          <strong>測試說明：</strong>每個 Phase 測試完成後，可直接測試下一個 Phase，系統會自動使用前段結果。
+        </div>
+        <button class="btn" onclick="runLightTest('P0')">🧪 測試 P0（產業工程學）</button>
+        <button class="btn btn-secondary" onclick="runLightTest('P0_5')">🧪 測試 P0.5（產業鏈地圖）</button>
+        <button class="btn btn-secondary" onclick="runLightTest('P0_7')">🧪 測試 P0.7（系統動力學）</button>
+        <button class="btn btn-secondary" onclick="runLightTest('P1')">🧪 測試 P1（公司池）</button>
+        <button class="btn btn-secondary" onclick="runLightTest('P2')">🧪 測試 P2（基本面）</button>
+        <button class="btn btn-secondary" onclick="runLightTest('P2_5')">🧪 測試 P2.5（籌碼面）</button>
+        <button class="btn btn-secondary" onclick="runLightTest('P3')">🧪 測試 P3（技術面）</button>
+        <button class="btn btn-secondary" onclick="runLightTest('P4')">🧪 測試 P4（資金配置）</button>
+        <button class="btn btn-secondary" onclick="runLightTest('P5_DAILY')">🧪 測試 P5 Daily</button>
+        <button class="btn btn-secondary" onclick="runLightTest('P5_WEEKLY')">🧪 測試 P5 Weekly</button>
+        <div id="testResult" style="margin-top: 15px; display: none;"></div>
+      </div>
+      
+      <!-- 系統狀態 -->
+      <div class="section">
+        <div class="section-title">📊 系統狀態</div>
+        <div id="systemStatus">
+          <div class="loading">載入中...</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 策略頁面 -->
+    <div id="strategyPage" style="display: none;">
+      <div class="section">
+        <div class="section-title">📋 本週操作策略</div>
+        <button class="btn btn-secondary" onclick="showPage('mainPage')">← 返回</button>
+        <div id="strategiesList">
+          <div class="loading">載入中...</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Human Signal 頁面 -->
+    <div id="humanSignalPage" style="display: none;">
+      <div class="section">
+        <div class="section-title">📝 輸入 Human Signal</div>
+        <button class="btn btn-secondary" onclick="showPage('mainPage')">← 返回</button>
+        
+        <form id="humanSignalForm" onsubmit="submitHumanSignal(event)">
+          <div class="form-group">
+            <label>類型</label>
+            <select id="signalType" required>
+              <option value="ARTICLE">文章</option>
+              <option value="NEWS">新聞</option>
+              <option value="ANALYSIS">分析</option>
+              <option value="OTHER">其他</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>標籤（可多選）</label>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="tag_market" value="市場">
+                <label for="tag_market">市場</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="tag_stock" value="個股">
+                <label for="tag_stock">個股</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="tag_macro" value="宏觀">
+                <label for="tag_macro">宏觀</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="tag_industry" value="產業">
+                <label for="tag_industry">產業</label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>內容</label>
+            <textarea id="signalContent" required placeholder="貼上或輸入內容..."></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label>URL（可選）</label>
+            <input type="url" id="signalURL" placeholder="https://...">
+          </div>
+          
+          <div class="form-group">
+            <label>相關股票代碼（用逗號分隔，可選）</label>
+            <input type="text" id="signalTickers" placeholder="AAPL, TSLA, 2330">
+          </div>
+          
+          <div class="form-group">
+            <label>重要性</label>
+            <select id="signalImportance">
+              <option value="LOW">低</option>
+              <option value="MEDIUM" selected>中</option>
+              <option value="HIGH">高</option>
+              <option value="CRITICAL">緊急</option>
+            </select>
+          </div>
+          
+          <button type="submit" class="btn">📤 提交到 P5 Daily</button>
+        </form>
+        
+        <div id="humanSignalStatus" class="status" style="display: none;"></div>
+      </div>
+    </div>
+    
+    <!-- 緊急通知頁面 -->
+    <div id="notificationsPage" style="display: none;">
+      <div class="section">
+        <div class="section-title">🚨 緊急通知</div>
+        <button class="btn btn-secondary" onclick="showPage('mainPage')">← 返回</button>
+        <div id="notificationsList">
+          <div class="loading">載入中...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // 頁面切換
+    function showPage(pageId) {
+      document.getElementById('mainPage').style.display = pageId === 'mainPage' ? 'block' : 'none';
+      document.getElementById('strategyPage').style.display = pageId === 'strategyPage' ? 'block' : 'none';
+      document.getElementById('humanSignalPage').style.display = pageId === 'humanSignalPage' ? 'block' : 'none';
+      document.getElementById('notificationsPage').style.display = pageId === 'notificationsPage' ? 'block' : 'none';
+      
+      if (pageId === 'strategyPage') {
+        loadStrategies();
+      } else if (pageId === 'notificationsPage') {
+        loadNotifications();
+      } else if (pageId === 'mainPage') {
+        loadSystemStatus();
+      }
+    }
+    
+    // 載入系統狀態
+    function loadSystemStatus() {
+      google.script.run
+        .withSuccessHandler(function(status) {
+          const statusDiv = document.getElementById('systemStatus');
+          let html = '<div class="status status-info">';
+          html += `<div><strong>最後執行時間：</strong>${status.last_full_pipeline ? new Date(status.last_full_pipeline.timestamp).toLocaleString() : '尚未執行'}</div>`;
+          html += `<div><strong>DEFCON 等級：</strong>${status.defcon || 5}</div>`;
+          html += `<div><strong>待處理策略：</strong>${status.pending_strategies || 0} 筆</div>`;
+          html += `<div><strong>緊急通知：</strong>${status.emergency_notifications || 0} 筆</div>`;
+          // ⭐ V8.0 新增
+          if (status.p2_5_available) {
+            html += `<div><strong>P2.5 籌碼分析：</strong>✓ 可用</div>`;
+          }
+          if (status.p5_4_alerts > 0) {
+            html += `<div><strong>P5.4 警報：</strong><span style="color: #ea4335;">${status.p5_4_alerts} 筆</span></div>`;
+          }
+          if (status.p5_9_bubble_stage) {
+            html += `<div><strong>P5.9 泡沫階段：</strong>${status.p5_9_bubble_stage}</div>`;
+          }
+          if (status.current_u !== null) {
+            html += `<div><strong>當前 U（資金水位）：</strong>${(status.current_u * 100).toFixed(0)}%</div>`;
+          }
+          html += '</div>';
+          statusDiv.innerHTML = html;
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('systemStatus').innerHTML = '<div class="status status-error">載入失敗：' + error.message + '</div>';
+        })
+        .getSystemStatus();
+    }
+    
+    // 執行完整流程
+    function executeFullPipeline() {
+      const statusDiv = document.getElementById('executeStatus');
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'status status-info';
+      statusDiv.textContent = '執行中，請稍候...（P0 → P4）';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.status === 'COMPLETED' || result.status === 'PARTIAL') {
+            statusDiv.className = 'status status-success';
+            let message = '執行完成！\n';
+            for (const phase in result.phases) {
+              const phaseResult = result.phases[phase];
+              message += `${phase}: ${phaseResult.status}\n`;
+            }
+            statusDiv.textContent = message;
+          } else {
+            statusDiv.className = 'status status-error';
+            statusDiv.textContent = '執行失敗：' + (result.error || '未知錯誤');
+          }
+        })
+        .withFailureHandler(function(error) {
+          statusDiv.className = 'status status-error';
+          statusDiv.textContent = '執行失敗：' + error.message;
+        })
+        .UI_ExecuteFullPipeline({ skip_user_confirmation: true });
+    }
+    
+    // 從 P2 開始執行（使用現有 P1 資料）⭐ V8.0 新增
+    function executeFromP2() {
+      console.log('executeFromP2 函數被調用');
+      const statusDiv = document.getElementById('executeStatus');
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'status status-info';
+      statusDiv.textContent = '執行中，請稍候...（P2 → P4，使用現有 P1 資料）';
+      
+      console.log('準備調用 UI_ExecuteFromP2');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          console.log('UI_ExecuteFromP2 執行成功，結果：', result);
+          if (result.status === 'COMPLETED' || result.status === 'PARTIAL') {
+            statusDiv.className = 'status status-success';
+            let message = '執行完成！\n';
+            for (const phase in result.phases) {
+              const phaseResult = result.phases[phase];
+              message += `${phase}: ${phaseResult.status}\n`;
+            }
+            statusDiv.textContent = message;
+          } else {
+            statusDiv.className = 'status status-error';
+            statusDiv.textContent = '執行失敗：' + (result.error || '未知錯誤');
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('UI_ExecuteFromP2 執行失敗：', error);
+          statusDiv.className = 'status status-error';
+          statusDiv.textContent = '執行失敗：' + error.message;
+          alert('執行失敗：' + error.message + '\n請查看 GAS 日誌獲取詳細資訊。');
+        })
+        .UI_ExecuteFromP2({ skip_user_confirmation: true });
+    }
+    
+    // 載入策略列表
+    function loadStrategies() {
+      google.script.run
+        .withSuccessHandler(function(strategies) {
+          const listDiv = document.getElementById('strategiesList');
+          if (strategies.length === 0) {
+            listDiv.innerHTML = '<div class="status status-info">目前沒有待處理的策略</div>';
+            return;
+          }
+          
+          let html = '';
+          strategies.forEach(function(strategy) {
+            const badgeClass = strategy.strategy === 'INCREASE' ? 'badge-increase' : 
+                              strategy.strategy === 'DECREASE' ? 'badge-decrease' : 'badge-hold';
+            html += '<div class="strategy-item">';
+            html += `<div class="strategy-header">`;
+            html += `<span class="strategy-ticker">${strategy.ticker}</span>`;
+            html += `<span class="strategy-badge ${badgeClass}">${strategy.strategy}</span>`;
+            html += `</div>`;
+            html += `<div>操作：${strategy.action}</div>`;
+            html += `<div>目標配置：${strategy.target_allocation}%</div>`;
+            html += `<div>信心度：${(strategy.confidence * 100).toFixed(0)}%</div>`;
+            html += `<div class="strategy-actions">`;
+            html += `<button class="btn btn-small" onclick="confirmStrategy('${strategy.ticker}', '${strategy.date}')">✅ 確認</button>`;
+            html += `<button class="btn btn-small btn-danger" onclick="rejectStrategy('${strategy.ticker}', '${strategy.date}')">❌ 拒絕</button>`;
+            html += `</div>`;
+            html += `</div>`;
+          });
+          listDiv.innerHTML = html;
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('strategiesList').innerHTML = '<div class="status status-error">載入失敗：' + error.message + '</div>';
+        })
+        .UI_GetPendingStrategies();
+    }
+    
+    // 確認策略
+    function confirmStrategy(ticker, date) {
+      if (confirm(`確認執行策略：${ticker}？`)) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              alert('策略已確認');
+              loadStrategies();
+            } else {
+              alert('確認失敗：' + result.message);
+            }
+          })
+          .withFailureHandler(function(error) {
+            alert('確認失敗：' + error.message);
+          })
+          .UI_ConfirmStrategy(ticker, date, {});
+      }
+    }
+    
+    // 拒絕策略
+    function rejectStrategy(ticker, date) {
+      const reason = prompt(`拒絕策略：${ticker}，請輸入原因：`);
+      if (reason !== null) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              alert('策略已拒絕');
+              loadStrategies();
+            } else {
+              alert('拒絕失敗：' + result.message);
+            }
+          })
+          .withFailureHandler(function(error) {
+            alert('拒絕失敗：' + error.message);
+          })
+          .UI_RejectStrategy(ticker, date, reason);
+      }
+    }
+    
+    // 提交 Human Signal
+    function submitHumanSignal(event) {
+      event.preventDefault();
+      
+      const statusDiv = document.getElementById('humanSignalStatus');
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'status status-info';
+      statusDiv.textContent = '提交中...';
+      
+      const tags = [];
+      if (document.getElementById('tag_market').checked) tags.push('市場');
+      if (document.getElementById('tag_stock').checked) tags.push('個股');
+      if (document.getElementById('tag_macro').checked) tags.push('宏觀');
+      if (document.getElementById('tag_industry').checked) tags.push('產業');
+      
+      const tickers = document.getElementById('signalTickers').value
+        .split(',')
+        .map(t => t.trim())
+        .filter(t => t.length > 0);
+      
+      const signalData = {
+        type: document.getElementById('signalType').value,
+        content: document.getElementById('signalContent').value,
+        url: document.getElementById('signalURL').value,
+        tags: tags,
+        tickers: tickers,
+        importance: document.getElementById('signalImportance').value,
+        process_immediately: false
+      };
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            statusDiv.className = 'status status-success';
+            statusDiv.textContent = '提交成功！信號 ID：' + result.signal_id;
+            document.getElementById('humanSignalForm').reset();
+          } else {
+            statusDiv.className = 'status status-error';
+            statusDiv.textContent = '提交失敗：' + result.message;
+          }
+        })
+        .withFailureHandler(function(error) {
+          statusDiv.className = 'status status-error';
+          statusDiv.textContent = '提交失敗：' + error.message;
+        })
+        .UI_SubmitHumanSignal(signalData);
+    }
+    
+    // 載入緊急通知
+    function loadNotifications() {
+      google.script.run
+        .withSuccessHandler(function(notifications) {
+          const listDiv = document.getElementById('notificationsList');
+          if (notifications.length === 0) {
+            listDiv.innerHTML = '<div class="status status-success">目前沒有緊急通知</div>';
+            return;
+          }
+          
+          let html = '';
+          notifications.forEach(function(notification) {
+            html += '<div class="notification-item">';
+            html += `<div class="notification-title">${notification.title}</div>`;
+            html += `<div>${notification.message}</div>`;
+            html += `<div style="font-size: 12px; color: #5f6368; margin-top: 5px;">${notification.timestamp}</div>`;
+            html += '</div>';
+          });
+          listDiv.innerHTML = html;
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('notificationsList').innerHTML = '<div class="status status-error">載入失敗：' + error.message + '</div>';
+        })
+        .UI_GetEmergencyNotifications();
+    }
+    
+    // ⭐ V8.9 新增：測試機構評級收集
+    function testInstitutionalRatings() {
+      const statusDiv = document.getElementById('dataflowTestStatus');
+      const resultDiv = document.getElementById('dataflowTestResult');
+      
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'status status-info';
+      statusDiv.textContent = '⭐ V8.9 機構評級收集測試執行中，請稍候...';
+      resultDiv.style.display = 'none';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          statusDiv.className = result.success ? 'status status-success' : 'status status-warning';
+          statusDiv.textContent = result.success ? 
+            `⭐ 機構評級收集完成（共 ${result.count || 0} 筆）` : 
+            `⭐ 機構評級收集警告：${result.message || '未知錯誤'}`;
+          
+          resultDiv.style.display = 'block';
+          let html = '<div class="status status-info" style="margin-top: 10px;">';
+          html += `<div><strong>收集結果：</strong>${result.success ? '✅ 成功' : '⚠️ 警告'}</div>`;
+          html += `<div><strong>收集筆數：</strong>${result.count || 0} 筆</div>`;
+          if (result.total_collected) {
+            html += `<div><strong>原始收集：</strong>${result.total_collected} 筆</div>`;
+            html += `<div><strong>去重後：</strong>${result.deduplicated || result.count} 筆</div>`;
+          }
+          if (result.message) {
+            html += `<div style="margin-top: 10px; color: #fbbc04;"><strong>說明：</strong>${result.message}</div>`;
+          }
+          html += '</div>';
+          resultDiv.innerHTML = html;
+        })
+        .withFailureHandler(function(error) {
+          statusDiv.className = 'status status-error';
+          statusDiv.textContent = '⭐ 機構評級收集測試失敗：' + error.message;
+          resultDiv.style.display = 'block';
+          resultDiv.innerHTML = '<div class="status status-error">錯誤：' + error.message + '</div>';
+        })
+        .collectInstitutionalRatings();
+    }
+    
+    // ⭐ V8.9 新增：測試新聞品質
+    function testNewsQuality() {
+      const statusDiv = document.getElementById('dataflowTestStatus');
+      const resultDiv = document.getElementById('dataflowTestResult');
+      
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'status status-info';
+      statusDiv.textContent = '⭐ V8.9 新聞品質測試執行中，請稍候...';
+      resultDiv.style.display = 'none';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          const statusColor = result.status === 'PASSED' ? 'status-success' : 
+                              result.status === 'WARNING' ? 'status-warning' : 'status-error';
+          const statusIcon = result.status === 'PASSED' ? '✅' : 
+                            result.status === 'WARNING' ? '⚠️' : '❌';
+          
+          statusDiv.className = 'status ' + statusColor;
+          statusDiv.textContent = `⭐ 新聞品質測試${result.status === 'PASSED' ? '通過' : result.status === 'WARNING' ? '部分通過' : '失敗'}（通過率 ${result.pass_rate || '0%'}）`;
+          
+          resultDiv.style.display = 'block';
+          let html = '<div class="status status-info" style="margin-top: 10px;">';
+          html += `<div><strong>測試結果：</strong>${statusIcon} ${result.status}</div>`;
+          html += `<div><strong>總新聞數：</strong>${result.total_news || 0} 筆</div>`;
+          html += `<div><strong>通過：</strong><span style="color: #34a853;">${result.total_passed || 0}</span></div>`;
+          html += `<div><strong>失敗：</strong><span style="color: #ea4335;">${result.total_failed || 0}</span></div>`;
+          html += `<div><strong>警告：</strong><span style="color: #fbbc04;">${result.total_warnings || 0}</span></div>`;
+          html += `<div><strong>通過率：</strong>${result.pass_rate || '0%'}</div>`;
+          
+          if (result.general_news) {
+            html += '<div style="margin-top: 10px;"><strong>一般新聞：</strong></div>';
+            html += `<div style="margin-left: 20px;">總數：${result.general_news.total}，通過：${result.general_news.passed}，失敗：${result.general_news.failed}</div>`;
+          }
+          
+          if (result.institutional_ratings) {
+            html += '<div style="margin-top: 10px;"><strong>機構評級新聞：</strong></div>';
+            html += `<div style="margin-left: 20px;">總數：${result.institutional_ratings.total}，通過：${result.institutional_ratings.passed}，失敗：${result.institutional_ratings.failed}</div>`;
+          }
+          
+          if (result.message) {
+            html += `<div style="margin-top: 10px; color: #5f6368;"><strong>說明：</strong>${result.message}</div>`;
+          }
+          
+          html += '</div>';
+          resultDiv.innerHTML = html;
+        })
+        .withFailureHandler(function(error) {
+          statusDiv.className = 'status status-error';
+          statusDiv.textContent = '⭐ 新聞品質測試失敗：' + error.message;
+          resultDiv.style.display = 'block';
+          resultDiv.innerHTML = '<div class="status status-error">錯誤：' + error.message + '</div>';
+        })
+        .testP5NewsQuality();
+    }
+    
+    // 🔍 數據流測試系統 ⭐ V8.0 新增
+    function runDataflowTest(testCategory) {
+      const statusDiv = document.getElementById('dataflowTestStatus');
+      const resultDiv = document.getElementById('dataflowTestResult');
+      
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'status status-info';
+      statusDiv.textContent = `🔍 ${testCategory} 數據流測試執行中，請稍候...`;
+      resultDiv.style.display = 'none';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          statusDiv.className = result.status === 'COMPLETED' ? 'status status-success' : 
+                                result.status === 'PARTIAL' ? 'status status-warning' : 'status status-error';
+          statusDiv.textContent = `🔍 ${testCategory} 數據流測試${result.status === 'COMPLETED' ? '完成' : result.status === 'PARTIAL' ? '部分通過' : '失敗'}`;
+          
+          // 顯示測試結果
+          resultDiv.style.display = 'block';
+          let html = '<div class="status status-info" style="margin-top: 10px;">';
+          html += `<div><strong>測試類別：</strong>${testCategory}</div>`;
+          html += `<div><strong>執行時間：</strong>${(result.duration / 1000).toFixed(2)} 秒</div>`;
+          
+          if (result.summary) {
+            html += '<div style="margin-top: 10px;"><strong>📊 測試摘要：</strong></div>';
+            html += '<div style="background: #f5f5f5; padding: 10px; border-radius: 4px; font-size: 12px;">';
+            html += `<div>總數：${result.summary.total}</div>`;
+            html += `<div style="color: #34a853;">✅ 通過：${result.summary.passed}</div>`;
+            html += `<div style="color: #ea4335;">❌ 失敗：${result.summary.failed}</div>`;
+            html += `<div style="color: #fbbc04;">⚠️ 警告：${result.summary.warning}</div>`;
+            html += '</div>';
+          }
+          
+          if (result.results && result.results.length > 0) {
+            html += '<div style="margin-top: 10px;"><strong>📋 詳細結果：</strong></div>';
+            html += '<div style="max-height: 400px; overflow-y: auto; background: #f5f5f5; padding: 10px; border-radius: 4px; font-size: 12px;">';
+            
+            result.results.forEach(function(testResult) {
+              const statusColor = testResult.status === 'PASSED' ? '#34a853' : 
+                                 testResult.status === 'FAILED' ? '#ea4335' : '#fbbc04';
+              const statusIcon = testResult.status === 'PASSED' ? '✅' : 
+                                testResult.status === 'FAILED' ? '❌' : '⚠️';
+              
+              html += `<div style="margin-bottom: 10px; padding: 8px; background: white; border-left: 3px solid ${statusColor}; border-radius: 4px;">`;
+              html += `<div style="font-weight: 600;">${statusIcon} ${testResult.test_name}</div>`;
+              html += `<div style="margin-top: 5px; color: #5f6368;">${testResult.message || testResult.error || ''}</div>`;
+              
+              if (testResult.result_count !== undefined) {
+                html += `<div style="margin-top: 3px; font-size: 11px; color: #666;">數據筆數：${testResult.result_count}`;
+                if (testResult.expected_min) {
+                  html += ` (預期 >= ${testResult.expected_min})`;
+                }
+                html += `</div>`;
+              }
+              
+              if (testResult.ticker) {
+                html += `<div style="margin-top: 3px; font-size: 11px; color: #666;">股票：${testResult.ticker} (${testResult.market || ''})</div>`;
+              }
+              
+              html += `</div>`;
+            });
+            
+            html += '</div>';
+          }
+          
+          html += '</div>';
+          resultDiv.innerHTML = html;
+        })
+        .withFailureHandler(function(error) {
+          statusDiv.className = 'status status-error';
+          statusDiv.textContent = `🔍 ${testCategory} 數據流測試失敗：${error.message}`;
+          resultDiv.style.display = 'block';
+          resultDiv.innerHTML = `<div class="status status-error">錯誤：${error.message}</div>`;
+        })
+        .DataflowTest_Execute({ test_category: testCategory });
+    }
+    
+    // 🧪 輕測試系統 ⭐ V8.0 新增
+    function runLightTest(phase) {
+      const statusDiv = document.getElementById('testStatus');
+      const resultDiv = document.getElementById('testResult');
+      
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'status status-info';
+      statusDiv.textContent = `🧪 ${phase} 測試執行中，請稍候...`;
+      resultDiv.style.display = 'none';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          // ⭐ V8.0 修正：處理 SUBMITTED 狀態（需要執行 M0）
+          if (result.status === 'SUBMITTED') {
+            statusDiv.className = 'status status-warning';
+            statusDiv.textContent = `🧪 ${phase} 測試：任務已提交到 M0，請執行 M0_Execute() 後再查看結果`;
+            
+            resultDiv.style.display = 'block';
+            let html = '<div class="status status-warning" style="margin-top: 10px;">';
+            html += `<div><strong>測試 Phase：</strong>${phase}</div>`;
+            html += `<div><strong>狀態：</strong>${result.status}</div>`;
+            html += `<div><strong>Job ID：</strong>${result.result.job_id || 'N/A'}</div>`;
+            html += `<div style="margin-top: 10px;"><strong>⚠️ 下一步：</strong></div>`;
+            html += `<div style="background: #fef7e0; padding: 10px; border-radius: 4px; margin-top: 5px;">`;
+            html += `<div>請執行 <code>M0_Execute()</code> 來處理 M0 Job Queue，然後重新執行測試查看結果。</div>`;
+            html += `</div>`;
+            html += `</div>`;
+            resultDiv.innerHTML = html;
+            return;
+          }
+          
+          statusDiv.className = result.status === 'COMPLETED' ? 'status status-success' : 'status status-error';
+          statusDiv.textContent = `🧪 ${phase} 測試${result.status === 'COMPLETED' ? '完成' : '失敗'}`;
+          
+          // 顯示測試結果
+          resultDiv.style.display = 'block';
+          let html = '<div class="status status-info" style="margin-top: 10px;">';
+          html += `<div><strong>測試 Phase：</strong>${phase}</div>`;
+          html += `<div><strong>執行時間：</strong>${(result.duration / 1000).toFixed(2)} 秒</div>`;
+          
+          if (result.status === 'COMPLETED') {
+            // ⭐ V8.0 新增：明確顯示 AI 回應檢查指引
+            var jobId = result.result?.job_id || result.job_id || '你的 job_id';
+            html += '<div style="margin-top: 15px; padding: 12px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">';
+            html += '<strong>📋 AI 回應檢查指引（重要！）：</strong><br><br>';
+            html += '<div style="font-size: 12px; line-height: 1.6;">';
+            html += '<strong>步驟 1：</strong>打開 <code>M0__CROSSCHECK_LOG</code> 表格<br>';
+            html += '<strong>步驟 2：</strong>篩選 <code>job_id = "' + jobId + '"</code><br>';
+            html += '<strong>步驟 3：</strong>找到 <code>step = "EXECUTOR"</code> 的記錄<br>';
+            html += '<strong>步驟 4：</strong>複製 <code>output_snapshot</code> 欄位的<strong>完整內容</strong>（這是執行者的原始回應）<br>';
+            html += '<strong>步驟 5：</strong>找到 <code>step = "AUDITOR"</code> 的記錄<br>';
+            html += '<strong>步驟 6：</strong>複製 <code>output_snapshot</code> 欄位的<strong>完整內容</strong>（這是審查者的原始回應）<br>';
+            html += '<strong>步驟 7：</strong>貼上給我檢查<br>';
+            html += '</div>';
+            html += '<div style="margin-top: 8px; font-size: 11px; color: #666;">';
+            html += '💡 提示：這是 AI 的原始回應，用於評估 Prompt 有效程度。詳細指引請參考：<code>輕測試AI回應檢查指南_V8.0.md</code>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div style="margin-top: 10px;"><strong>✅ AI 回應欄位摘要（前 20 個）：</strong></div>';
+            html += '<div style="max-height: 200px; overflow-y: auto; background: #f5f5f5; padding: 10px; border-radius: 4px; font-size: 12px; font-family: monospace;">';
+            
+            if (result.ai_output_fields && result.ai_output_fields.length > 0) {
+              var fieldCount = 0;
+              result.ai_output_fields.forEach(function(field) {
+                if (fieldCount < 20) {
+                  html += `<div>${field.field}: ${typeof field.value === 'object' ? JSON.stringify(field.value).substring(0, 100) : String(field.value).substring(0, 100)}</div>`;
+                  fieldCount++;
+                }
+              });
+              if (result.ai_output_fields.length > 20) {
+                html += `<div style="color: #666;">... 還有 ${result.ai_output_fields.length - 20} 個欄位</div>`;
+              }
+            } else {
+              html += '<div>（無 AI 回應欄位，可能是純計算模組）</div>';
+            }
+            
+            html += '</div>';
+            
+            if (result.prompt_evaluation) {
+              html += '<div style="margin-top: 10px;"><strong>📊 Prompt 有效程度評估：</strong></div>';
+              html += '<div style="background: #f5f5f5; padding: 10px; border-radius: 4px; font-size: 12px;">';
+              
+              if (result.prompt_evaluation.completeness) {
+                html += '<div><strong>完整性：</strong></div>';
+                for (const [key, value] of Object.entries(result.prompt_evaluation.completeness)) {
+                  html += `<div>  - ${key}: ${value}</div>`;
+                }
+              }
+              
+              if (result.prompt_evaluation.issues && result.prompt_evaluation.issues.length > 0) {
+                html += '<div style="margin-top: 10px;"><strong>⚠️ 發現的問題：</strong></div>';
+                result.prompt_evaluation.issues.forEach(function(issue) {
+                  const severityColor = issue.severity === 'CRITICAL' ? '#c5221f' : 
+                                       issue.severity === 'HIGH' ? '#ea4335' : 
+                                       issue.severity === 'MEDIUM' ? '#fbbc04' : '#34a853';
+                  html += `<div style="color: ${severityColor};">  - [${issue.severity}] ${issue.ticker || ''} ${issue.issue || issue}</div>`;
+                });
+              } else {
+                html += '<div style="color: #34a853;">✅ 未發現問題</div>';
+              }
+              
+              // ⭐ V8.0 新增：顯示三個核心評估重點
+              if (result.prompt_evaluation.core_assessment) {
+            // ⭐ V8.0 新增：顯示自動讀取 AI 原始回應的狀態（僅用於資料讀取，最終評估必須由 AI 助手進行）
+            if (result.prompt_evaluation && result.prompt_evaluation.ai_raw_responses) {
+              const aiRes = result.prompt_evaluation.ai_raw_responses;
+              const statusColor = (aiRes.executor_available && aiRes.auditor_available) ? '#34a853' : '#fbbc04';
+              html += '<div style="margin-top: 10px; padding: 8px; background: #e8f0fe; border-left: 3px solid ' + statusColor + '; border-radius: 4px;">';
+              html += '<strong>📊 資料讀取狀態（僅供參考）：</strong><br>';
+              html += '<span style="font-size: 12px;">';
+              html += (aiRes.executor_available ? '✅ EXECUTOR 回應已讀取' : '❌ EXECUTOR 回應未找到') + '<br>';
+              html += (aiRes.auditor_available ? '✅ AUDITOR 回應已讀取' : '❌ AUDITOR 回應未找到') + '<br>';
+              if (aiRes.job_id) {
+                html += 'Job ID: <code style="font-size: 11px;">' + aiRes.job_id + '</code><br>';
+              }
+              html += '<em style="color: #666; font-size: 11px;">⚠️ 此處僅顯示資料讀取狀態，最終評估必須由 AI 助手（我）進行</em>';
+              html += '</span></div>';
+            }
+            
+            html += '<div style="margin-top: 15px; padding: 10px; background: #f0f4ff; border-left: 4px solid #4285f4; border-radius: 4px;">';
+            html += '<strong>🔍 三個核心評估重點（初步檢查，最終評估需由 AI 助手進行）：</strong><br><br>';
+                
+                const ca = result.prompt_evaluation.core_assessment;
+                
+                // 重點 1
+                if (ca.task_alignment) {
+                  const ta = ca.task_alignment;
+                  const taColor = ta.assessment === 'ALIGNED' ? '#34a853' : ta.assessment === 'PARTIAL' ? '#fbbc04' : '#ea4335';
+                  html += `<div style="margin-bottom: 8px;"><strong style="color: ${taColor};">1. 是否符合主要任務與設計精神：</strong> ${ta.assessment}</div>`;
+                  html += `<div style="font-size: 11px; color: #666; margin-left: 20px;">${ta.description}</div>`;
+                  if (ta.suggestions && ta.suggestions.length > 0) {
+                    html += `<div style="font-size: 11px; color: #ea4335; margin-left: 20px; margin-top: 3px;">💡 建議：${ta.suggestions.join('; ')}</div>`;
+                  }
+                }
+                
+                // 重點 2
+                if (ca.emphasis_check) {
+                  const ec = ca.emphasis_check;
+                  const ecColor = ec.assessment === 'STRONG' ? '#34a853' : ec.assessment === 'MODERATE' ? '#fbbc04' : '#ea4335';
+                  html += `<div style="margin-bottom: 8px; margin-top: 10px;"><strong style="color: ${ecColor};">2. 是否強調出重視的部分：</strong> ${ec.assessment}</div>`;
+                  html += `<div style="font-size: 11px; color: #666; margin-left: 20px;">${ec.description}</div>`;
+                  if (ec.suggestions && ec.suggestions.length > 0) {
+                    html += `<div style="font-size: 11px; color: #ea4335; margin-left: 20px; margin-top: 3px;">💡 建議：${ec.suggestions.join('; ')}</div>`;
+                  }
+                }
+                
+                // 重點 3
+                if (ca.consistency) {
+                  const cs = ca.consistency;
+                  html += `<div style="margin-top: 10px;"><strong>3. 回答偏離度（一致性）：</strong> ${cs.assessment}</div>`;
+                  html += `<div style="font-size: 11px; color: #666; margin-left: 20px;">${cs.description || cs.note || '需要多次執行才能評估'}</div>`;
+                }
+                
+                html += '</div>';
+              }
+              
+              html += '</div>';
+            }
+            
+            html += '<div style="margin-top: 15px; padding: 12px; background: #e8f0fe; border-left: 4px solid #1a73e8; border-radius: 4px;">';
+            html += '<strong>📋 請複製以下內容回覆：</strong><br><br>';
+            html += '<div style="font-size: 11px; font-family: monospace; white-space: pre-wrap; word-wrap: break-word; background: white; padding: 10px; border-radius: 4px;">';
+            html += `Phase: ${phase}\n`;
+            html += `Status: ${result.status}\n`;
+            html += `Duration: ${(result.duration / 1000).toFixed(2)}s\n`;
+            html += `Job ID: ${jobId}\n\n`;
+            html += '=== AI 回應檢查（必須提供）===\n';
+            html += '表格：M0__CROSSCHECK_LOG\n';
+            html += `篩選：job_id = "${jobId}"\n\n`;
+            html += 'EXECUTOR 回應：\n';
+            html += '[請複製 step="EXECUTOR" 的 output_snapshot 欄位完整內容]\n\n';
+            html += 'AUDITOR 回應：\n';
+            html += '[請複製 step="AUDITOR" 的 output_snapshot 欄位完整內容]\n\n';
+            html += '=== AI 輸出欄位摘要 ===\n';
+            if (result.ai_output_fields && result.ai_output_fields.length > 0) {
+              var fieldCount = 0;
+              result.ai_output_fields.forEach(function(field) {
+                if (fieldCount < 30) {
+                  html += `  ${field.field}: ${JSON.stringify(field.value).substring(0, 200)}\n`;
+                  fieldCount++;
+                }
+              });
+              if (result.ai_output_fields.length > 30) {
+                html += `  ... 還有 ${result.ai_output_fields.length - 30} 個欄位\n`;
+              }
+            } else {
+              html += '  (無 AI 回應欄位)\n';
+            }
+            html += '\n=== Prompt 評估 ===\n';
+            html += JSON.stringify(result.prompt_evaluation, null, 2);
+            html += '</div>';
+            html += '</div>';
+          } else {
+            html += `<div style="color: #c5221f;"><strong>❌ 錯誤：</strong>${result.error || '未知錯誤'}</div>`;
+            if (result.stack) {
+              html += `<div style="font-size: 11px; font-family: monospace; margin-top: 5px;">${result.stack}</div>`;
+            }
+          }
+          
+          html += '</div>';
+          resultDiv.innerHTML = html;
+        })
+        .withFailureHandler(function(error) {
+          statusDiv.className = 'status status-error';
+          statusDiv.textContent = `🧪 ${phase} 測試失敗：${error.message}`;
+          
+          resultDiv.style.display = 'block';
+          resultDiv.innerHTML = '<div class="status status-error">錯誤：' + error.message + '</div>';
+        })
+        .LightTest_Execute({ phase: phase, use_previous_results: true });
+    }
+    
+    // 頁面載入時初始化
+    window.onload = function() {
+      loadSystemStatus();
+    };
+  </script>
+</body>
+</html>
