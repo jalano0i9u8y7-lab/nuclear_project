@@ -1,0 +1,59 @@
+# Nuclear Project Milestone
+# CLI 和 Agent 共用的進度記錄
+
+version: "2026-02-05T04:55Z"
+current_phase: M09
+last_updated_by: agent:scheduled_execution
+
+checkpoints:
+  - id: M00
+    status: completed
+    completed_at: "2026-02-04T20:00Z"
+    completed_by: agent
+    notes: "Windows 一鍵自動化工作流 (dev.ps1)"
+
+  - id: SKILLS_V1
+    status: completed
+    completed_at: "2026-02-05T01:08Z"
+    completed_by: agent
+    notes: "Skills 模組化第一波 (Top 8)"
+
+  - id: M08
+    status: completed
+    completed_at: "2026-02-05T04:30Z"
+    completed_by: agent
+    notes: "P6 daemon hardening, systemd service"
+
+  - id: SHARED_PROGRESS
+    status: completed
+    completed_at: "2026-02-05T04:50Z"
+    completed_by: agent
+    notes: "CLI-Agent 共享進度協議 (V8.52)"
+
+  - id: M09_SCHEDULED_EXECUTION
+    status: completed
+    started_at: "2026-02-05T04:50Z"
+    completed_at: "2026-02-05T04:55Z"
+    started_by: agent
+    completed_by: agent
+    notes: "Daily/Weekly 排程執行 via systemd timers"
+    artifacts:
+      - src/nuclear/orchestration/schedule.py
+      - deploy/nuclear-daily.service
+      - deploy/nuclear-daily.timer
+      - deploy/nuclear-weekly.service
+      - deploy/nuclear-weekly.timer
+      - tests/test_schedule.py
+
+pending_handoff:
+  - from: agent
+    to: cli
+    task: "Deploy systemd timers to VM"
+    blocking: false
+    created_at: "2026-02-05T04:55Z"
+    context:
+      commands:
+        - "sudo cp deploy/*.service deploy/*.timer /etc/systemd/system/"
+        - "sudo systemctl daemon-reload"
+        - "sudo systemctl enable --now nuclear-daily.timer nuclear-weekly.timer"
+        - "systemctl list-timers --all | grep nuclear"

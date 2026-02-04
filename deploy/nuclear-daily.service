@@ -1,0 +1,17 @@
+[Unit]
+Description=Nuclear Daily Pipeline
+After=network.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/nuclear_project
+Environment=PYTHONUNBUFFERED=1
+Environment=PATH=/home/ubuntu/nuclear_project/.venv/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/ubuntu/nuclear_project/.venv/bin/python -m nuclear schedule daily
+StandardOutput=journal
+StandardError=journal
+
+# Resource limits
+TimeoutStartSec=3600
+MemoryMax=4G

@@ -1,0 +1,58 @@
+version: "1"
+ssot:
+  file: "V8.0架構定案文檔_SSOT.md"
+  last_updated: "2026-02-04"
+  authority: true
+
+rules:
+  ai_read_scope:
+    allowed_paths:
+      - "V8.0架構定案文檔_SSOT.md"
+      - "docs/registry.yaml"
+      - "docs/README_docs_governance.md"
+      - "docs/d1a_news_whitelist.md"
+      - "docs/d1b_forum_whitelist.md"
+      - "README.md"
+      - "src/nuclear/**"
+      - "tests/**"
+    forbidden_paths:
+      - "gas_archive/**"
+      - "**/*.gs"
+      - "**/*.gscript"
+  note: >
+    Agents must not read anything outside allowed_paths unless explicitly added to this registry.
+
+referenced_docs:
+  # Each item defines a referenced document in SSOT or engineering specs.
+  - id: "D1A_NEWS_WHITELIST"
+    title: "D1-A News Whitelist (Authoritative)"
+    path: "docs/d1a_news_whitelist.md"
+    owner: "agent"
+    status: "present"
+    referenced_by:
+      - "SSOT V8.45"
+    notes: "Content extracted only; no new rules introduced."
+
+  - id: "D1B_FORUM_WHITELIST"
+    title: "D1-B Forum Whitelist (Authoritative)"
+    path: "docs/d1b_forum_whitelist.md"
+    owner: "agent"
+    status: "present"
+    referenced_by:
+      - "SSOT V8.45"
+    notes: "Content extracted only; no new rules introduced."
+
+  - id: "LEGACY_GAS_OVERVIEW"
+    title: "Legacy GAS Overview (Read-only reference)"
+    path: "gas_archive/README.md"
+    owner: "user"
+    status: "present"
+    referenced_by:
+      - "historical reference"
+    notes: "Forbidden for agents unless explicitly allowed for a specific task."
+
+change_log:
+  - date: "2026-02-04"
+    change: "Created initial docs registry and read-scope lock."
+    author: "agent"
+    append_only: true

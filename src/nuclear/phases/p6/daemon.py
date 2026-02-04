@@ -5,18 +5,29 @@ Retention: Weekly complete -> unlock -> clear last week general data; retain_fla
 """
 
 import asyncio
+from datetime import datetime, timezone
+
 import structlog
 
 log = structlog.get_logger()
 
 
-async def run_p6_daemon():
-    """P6 daemon loop - monitors, retention policy."""
-    log.info("P6 daemon starting")
-    while True:
-        # Skeleton: monitor loop
-        await asyncio.sleep(60)
+import asyncio
+import argparse
+import sys
+from nuclear.phases.p6.runtime import run_p6_daemon
 
+async def main():
+    parser = argparse.ArgumentParser(description="P6 Daemon")
+    parser.add_argument("--interval", type=int, default=30, help="Tick interval in seconds")
+    parser.add_argument("--instance-id", default="p6_local", help="Instance identifier")
+    args = parser.parse_args()
+
+    await run_p6_daemon(interval_sec=args.interval, instance_id=args.instance_id)
 
 if __name__ == "__main__":
-    asyncio.run(run_p6_daemon())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
+    sys.exit(0)

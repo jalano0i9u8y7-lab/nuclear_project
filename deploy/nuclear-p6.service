@@ -1,0 +1,15 @@
+[Unit]
+Description=Nuclear P6 Daemon
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/nuclear_project
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 -m nuclear p6 --daemon --interval 60 --instance-id p6_prod
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

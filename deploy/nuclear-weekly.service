@@ -1,0 +1,17 @@
+[Unit]
+Description=Nuclear Weekly Pipeline (WB1 + WB2)
+After=network.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/nuclear_project
+Environment=PYTHONUNBUFFERED=1
+Environment=PATH=/home/ubuntu/nuclear_project/.venv/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/ubuntu/nuclear_project/.venv/bin/python -m nuclear schedule weekly
+StandardOutput=journal
+StandardError=journal
+
+# Resource limits - Weekly takes longer
+TimeoutStartSec=7200
+MemoryMax=8G

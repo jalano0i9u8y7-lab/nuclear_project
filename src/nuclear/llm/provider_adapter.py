@@ -24,6 +24,11 @@ def call_hermes_with_reasoning(
 
 
 def parse_and_store_reasoning(raw_content: str) -> tuple[str | None, str]:
-    """Parse Hermes response, return (reasoning_trace, final_answer)."""
+    """
+    Parse Hermes response, return (reasoning_trace, final_answer).
+    SSOT V8.42: contract/storage for include_reasoning + reasoning_trace.
+    TODO: Persist reasoning_trace to R2 or DB (AiOutput.reasoning_trace_storage_key);
+          wire real LLM call -> parse_hermes_response -> save to ai_outputs.
+    """
     parsed = parse_hermes_response(raw_content)
     return parsed.reasoning_trace, parsed.final_answer

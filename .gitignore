@@ -1,0 +1,22 @@
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.env
+
+# Project
+outputs/
+logs/
+.gemini/
+brain/
+tmp/
+
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,13 @@
+[Unit]
+Description=Nuclear Daily Pipeline Timer
+Requires=nuclear-daily.service
+
+[Timer]
+# 06:30 Asia/Taipei = 22:30 UTC (previous day)
+# Note: Actual date computation happens inside the wrapper using Asia/Taipei timezone
+OnCalendar=*-*-* 22:30:00 UTC
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

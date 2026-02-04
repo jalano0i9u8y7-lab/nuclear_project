@@ -1,0 +1,192 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "D4_Output",
+    "description": "D-4 宏觀世界觀統整師輸出格式 (Daily Macro Integrator)",
+    "type": "object",
+    "required": [
+        "date",
+        "macro_snapshot",
+        "identity_shift_signals",
+        "narrative_updates"
+    ],
+    "properties": {
+        "date": {
+            "type": "string",
+            "format": "date",
+            "description": "快照日期 (YYYY-MM-DD)"
+        },
+        "macro_snapshot": {
+            "type": "object",
+            "required": [
+                "indices",
+                "rates",
+                "commodities",
+                "volatility"
+            ],
+            "properties": {
+                "indices": {
+                    "type": "object",
+                    "properties": {
+                        "spx": {
+                            "type": "object",
+                            "properties": {
+                                "close": {
+                                    "type": "number"
+                                },
+                                "change_pct": {
+                                    "type": "number"
+                                }
+                            }
+                        },
+                        "ndx": {
+                            "type": "object",
+                            "properties": {
+                                "close": {
+                                    "type": "number"
+                                },
+                                "change_pct": {
+                                    "type": "number"
+                                }
+                            }
+                        },
+                        "vix": {
+                            "type": "object",
+                            "properties": {
+                                "close": {
+                                    "type": "number"
+                                },
+                                "level": {
+                                    "enum": [
+                                        "LOW",
+                                        "NORMAL",
+                                        "ELEVATED",
+                                        "EXTREME"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "rates": {
+                    "type": "object",
+                    "properties": {
+                        "us_10y": {
+                            "type": "number"
+                        },
+                        "us_2y": {
+                            "type": "number"
+                        },
+                        "yield_curve": {
+                            "enum": [
+                                "NORMAL",
+                                "FLAT",
+                                "INVERTED"
+                            ]
+                        }
+                    }
+                },
+                "commodities": {
+                    "type": "object",
+                    "properties": {
+                        "gold": {
+                            "type": "number"
+                        },
+                        "oil": {
+                            "type": "number"
+                        },
+                        "copper": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "volatility": {
+                    "type": "object",
+                    "properties": {
+                        "vix_term_structure": {
+                            "enum": [
+                                "CONTANGO",
+                                "FLAT",
+                                "BACKWARDATION"
+                            ]
+                        },
+                        "skew_index": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        },
+        "identity_shift_signals": {
+            "type": "array",
+            "description": "僅信號，不裁決身份",
+            "items": {
+                "type": "object",
+                "required": [
+                    "asset",
+                    "signal_type",
+                    "evidence_ids"
+                ],
+                "properties": {
+                    "asset": {
+                        "type": "string"
+                    },
+                    "signal_type": {
+                        "enum": [
+                            "PRICE_EXTREME",
+                            "FLOW_ABNORMAL",
+                            "DERIVATIVE_SURGE",
+                            "PARTICIPANT_SHIFT",
+                            "RULE_CHANGE"
+                        ]
+                    },
+                    "magnitude": {
+                        "enum": [
+                            "LOW",
+                            "MEDIUM",
+                            "HIGH"
+                        ]
+                    },
+                    "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "narrative_updates": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "narrative_id": {
+                        "type": "string"
+                    },
+                    "update_type": {
+                        "enum": [
+                            "CONTINUATION",
+                            "PIVOT",
+                            "FADE",
+                            "AMPLIFY"
+                        ]
+                    },
+                    "summary": {
+                        "type": "string",
+                        "maxLength": 100
+                    }
+                }
+            }
+        },
+        "weekly_escalation_hint": {
+            "type": "boolean",
+            "description": "是否建議週報層級審查"
+        },
+        "escalation_reasons": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

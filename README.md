@@ -2,9 +2,47 @@
 
 WB-1 / WB-2 / W-A 主線 | P6 daemon 常駐 | Hermes 4 reasoning_trace | OCI ARM 部署
 
+## 📚 Terminology
+
+- **SSOT Terms (Authoritative)**: D-1..D-4 (Daily), WB-1/W-A/WB-2 (Weekly), P6 (Daemon). These drive the business logic.
+- **Engineering Milestones (Internal)**: M00/M01/M02... These are build steps only.
+  - **M00**: One-command workflow (`dev.ps1`)
+  - **M01**: Infra: cold snapshot storage (`outputs/snapshots/`)
+  - **M02**: Infra: run index + snapshot index (`outputs/nuclear.db`)
+  - **M03**: Daily (D-3/D-4) history reconciliation (read-only)
+
 ---
 
-## 完全新手操作（複製貼上即可跑起來）
+## ⚡ Windows 快速開發指南 (M00)
+
+使用 `dev.ps1` 一鍵管理開發環境，無需手動安裝 Poetry 或設定 Python Path。
+
+### 1. 初始化環境
+```powershell
+.\dev.ps1 setup
+```
+
+### 2. 執行核心流程 (WB-1 -> WB-2)
+```powershell
+.\dev.ps1 wb
+```
+
+### 3. 執行測試 (Mocked)
+```powershell
+.\dev.ps1 test
+```
+
+### 4. 啟動 P6 監控
+```powershell
+.\dev.ps1 p6
+```
+
+### 5. 清理產出物
+```powershell
+.\dev.ps1 clean
+```
+
+---
 
 ### 1. 安裝 Poetry
 
@@ -105,3 +143,15 @@ src/nuclear/
 - 冷熱分離：Postgres 索引，R2 存大內容
 - Hermes 4：include_reasoning=true，reasoning_trace 存 R2
 - OrderPlan：worldview_version + identity_context
+
+---
+
+## 🤖 AI Read-Scope Rule (Anti-Pollution)
+
+**Agents must read only:**
+1. SSOT (`V8.0架構定案文檔_SSOT.md`)
+2. Docs Registry (`docs/registry.yaml`)
+3. Docs explicitly listed as **present** in registry.yaml
+4. Source code (`src/nuclear`, `tests`)
+
+**Agents must NOT infer requirements from legacy files** (e.g., `gas_archive/*`) unless explicitly authorized.

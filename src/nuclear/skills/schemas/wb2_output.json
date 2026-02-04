@@ -1,0 +1,169 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "WB2_Output",
+    "description": "WB-2 個股策略與掛單輸出格式 (Weekly Orders)",
+    "type": "object",
+    "required": [
+        "generated_at",
+        "worldview_version",
+        "orders"
+    ],
+    "properties": {
+        "generated_at": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "worldview_version": {
+            "type": "string",
+            "description": "引用的世界觀版本號"
+        },
+        "orders": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "ticker",
+                    "worldview_version",
+                    "identity_context",
+                    "action"
+                ],
+                "properties": {
+                    "ticker": {
+                        "type": "string"
+                    },
+                    "worldview_version": {
+                        "type": "string"
+                    },
+                    "identity_context": {
+                        "type": "object",
+                        "required": [
+                            "asset_id",
+                            "identity_label",
+                            "narrative"
+                        ],
+                        "properties": {
+                            "asset_id": {
+                                "type": "string"
+                            },
+                            "identity_label": {
+                                "type": "string"
+                            },
+                            "narrative": {
+                                "type": "string",
+                                "maxLength": 200
+                            }
+                        }
+                    },
+                    "action": {
+                        "enum": [
+                            "BUY",
+                            "SELL",
+                            "HOLD",
+                            "REDUCE",
+                            "INCREASE",
+                            "EXIT"
+                        ]
+                    },
+                    "order_type": {
+                        "enum": [
+                            "LIMIT",
+                            "STOP_LIMIT",
+                            "BRACKET",
+                            "MARKET"
+                        ]
+                    },
+                    "order_details": {
+                        "type": "object",
+                        "properties": {
+                            "limit_price": {
+                                "type": "number"
+                            },
+                            "stop_price": {
+                                "type": "number"
+                            },
+                            "quantity": {
+                                "type": "number"
+                            },
+                            "quantity_pct": {
+                                "type": "number",
+                                "description": "倉位百分比"
+                            }
+                        }
+                    },
+                    "gtd": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "訂單有效期 (Good Till Date)"
+                    },
+                    "execution_preference": {
+                        "enum": [
+                            "ADAPTIVE",
+                            "SNAP_PRIMARY",
+                            "LIMIT_ONLY"
+                        ]
+                    },
+                    "rationale": {
+                        "type": "object",
+                        "properties": {
+                            "primary_factors": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "weight_distribution": {
+                                "type": "object",
+                                "properties": {
+                                    "fundamental": {
+                                        "type": "number"
+                                    },
+                                    "chips": {
+                                        "type": "number"
+                                    },
+                                    "tech": {
+                                        "type": "number"
+                                    },
+                                    "macro": {
+                                        "type": "number"
+                                    },
+                                    "sentiment": {
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            "evidence_ids": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "risk_overlay_applied": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "portfolio_summary": {
+            "type": "object",
+            "properties": {
+                "total_exposure": {
+                    "type": "number"
+                },
+                "sector_exposure": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "cash_pct": {
+                    "type": "number"
+                }
+            }
+        }
+    }
+}

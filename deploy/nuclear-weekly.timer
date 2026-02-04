@@ -1,0 +1,13 @@
+[Unit]
+Description=Nuclear Weekly Pipeline Timer
+Requires=nuclear-weekly.service
+
+[Timer]
+# Monday 07:00 Asia/Taipei = Sunday 23:00 UTC
+# Note: Actual date computation happens inside the wrapper using Asia/Taipei timezone
+OnCalendar=Sun *-*-* 23:00:00 UTC
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target

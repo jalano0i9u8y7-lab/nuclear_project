@@ -80,7 +80,12 @@ class Quarantine(Base):
 
 
 class AiOutput(Base):
-    """SSOT V8.36: Hermes 4 outputs with reasoning_trace in R2."""
+    """
+    SSOT V8.36/V8.42: Hermes 4 outputs with reasoning_trace (R2 or TEXT).
+    Contract: include_reasoning, reasoning_trace_storage_key (or inline TEXT).
+    TODO: Wire LLM response -> parse_hermes_response -> persist reasoning_trace to R2/DB,
+          set reasoning_trace_storage_key in ai_outputs.
+    """
 
     __tablename__ = "ai_outputs"
 

@@ -1,0 +1,146 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "D3_Output",
+    "description": "D-3 個股統整師輸出格式 (Daily Stock Integrator)",
+    "type": "object",
+    "required": [
+        "ticker",
+        "date",
+        "snapshot",
+        "event_links",
+        "flags"
+    ],
+    "properties": {
+        "ticker": {
+            "type": "string",
+            "description": "股票代碼"
+        },
+        "date": {
+            "type": "string",
+            "format": "date",
+            "description": "快照日期 (YYYY-MM-DD)"
+        },
+        "snapshot": {
+            "type": "object",
+            "required": [
+                "price_data",
+                "volume_data",
+                "derivative_summary"
+            ],
+            "properties": {
+                "price_data": {
+                    "type": "object",
+                    "properties": {
+                        "close": {
+                            "type": "number"
+                        },
+                        "change_pct": {
+                            "type": "number"
+                        },
+                        "vs_ma20": {
+                            "type": "number"
+                        },
+                        "vs_ma50": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "volume_data": {
+                    "type": "object",
+                    "properties": {
+                        "volume": {
+                            "type": "integer"
+                        },
+                        "volume_ratio": {
+                            "type": "number",
+                            "description": "相對平均成交量比率"
+                        }
+                    }
+                },
+                "derivative_summary": {
+                    "type": "object",
+                    "properties": {
+                        "oi_change": {
+                            "type": "number"
+                        },
+                        "iv_rank": {
+                            "type": "number"
+                        },
+                        "put_call_ratio": {
+                            "type": "number"
+                        },
+                        "gamma_state": {
+                            "enum": [
+                                "POSITIVE",
+                                "NEGATIVE",
+                                "NEAR_FLIP",
+                                "UNKNOWN"
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "event_links": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "event_id",
+                    "link_type"
+                ],
+                "properties": {
+                    "event_id": {
+                        "type": "string"
+                    },
+                    "link_type": {
+                        "enum": [
+                            "CONTINUATION",
+                            "PIVOT",
+                            "FADE",
+                            "AMPLIFY",
+                            "BRANCH",
+                            "NEW_NARRATIVE"
+                        ]
+                    },
+                    "linked_narrative_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "confidence": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                    }
+                }
+            }
+        },
+        "flags": {
+            "type": "object",
+            "properties": {
+                "identity_shift_signal": {
+                    "type": "boolean"
+                },
+                "weekly_escalation_hint": {
+                    "type": "boolean"
+                },
+                "distortion_risk": {
+                    "enum": [
+                        "NONE",
+                        "LOW",
+                        "MED",
+                        "HIGH"
+                    ]
+                }
+            }
+        },
+        "evidence_ids": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}
