@@ -23,7 +23,13 @@ class LLMRouter:
             if key and key.strip():
                 try:
                     from .openrouter_client import OpenRouterClient
-                    return OpenRouterClient(api_key=key)
+                    
+                    # Read model and provider from .env
+                    model = os.environ.get("DEFAULT_ANALYST_MODEL") or os.environ.get("OPENROUTER_MODEL")
+                    provider = os.environ.get("DEFAULT_ANALYST_PROVIDER")
+                    provider_order = [provider] if provider else None
+                    
+                    return OpenRouterClient(api_key=key, model=model, provider_order=provider_order)
                 except Exception as e:
                     # Log error but fallback
                     import structlog
