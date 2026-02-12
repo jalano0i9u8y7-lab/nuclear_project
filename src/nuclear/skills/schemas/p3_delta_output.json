@@ -1,0 +1,97 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "P3_Delta_Weekly_Output",
+    "description": "P3-Delta 週度追蹤輸出 (§8.7.2)",
+    "type": "object",
+    "required": [
+        "ticker",
+        "cat_update",
+        "key_level_breach",
+        "volume_anomaly",
+        "rs_score_5d_updated",
+        "boomerang_triggered",
+        "skeleton_validity",
+        "weekly_note"
+    ],
+    "properties": {
+        "ticker": {
+            "type": "string"
+        },
+        "cat_update": {
+            "type": "object",
+            "required": [
+                "previous_cat",
+                "current_cat",
+                "cat_changed"
+            ],
+            "properties": {
+                "previous_cat": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5
+                },
+                "current_cat": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5
+                },
+                "cat_changed": {
+                    "type": "boolean"
+                },
+                "change_reason": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "key_level_breach": {
+            "type": "object",
+            "required": [
+                "support_broken",
+                "resistance_broken"
+            ],
+            "properties": {
+                "support_broken": {
+                    "type": "boolean"
+                },
+                "resistance_broken": {
+                    "type": "boolean"
+                },
+                "broken_level": {
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "breach_quality": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "volume_anomaly": {
+            "type": "boolean"
+        },
+        "rs_score_5d_updated": {
+            "type": "number"
+        },
+        "boomerang_triggered": {
+            "type": "boolean"
+        },
+        "skeleton_validity": {
+            "type": "string",
+            "enum": [
+                "VALID",
+                "STALE",
+                "CRITICAL"
+            ]
+        },
+        "weekly_note": {
+            "type": "string"
+        }
+    }
+}

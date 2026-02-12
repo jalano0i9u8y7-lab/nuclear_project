@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "OrderIntentResult",
+    "type": "object",
+    "properties": {
+        "orders": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string"
+                    },
+                    "intent": {
+                        "type": "string",
+                        "enum": [
+                            "add",
+                            "reduce"
+                        ]
+                    }
+                },
+                "required": [
+                    "symbol",
+                    "intent"
+                ]
+            }
+        }
+    },
+    "required": [
+        "orders"
+    ]
+}

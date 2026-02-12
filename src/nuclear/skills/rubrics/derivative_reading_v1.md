@@ -1,69 +1,36 @@
-# Derivative Reading Rubric v1
-# Version: 1.0
-# Source: V8.0架構定案文檔_SSOT.md (DSFP 五模組)
-# Last Updated: 2026-02-05
+# 衍生品解讀方法論 V1
 
-## 衍生品解讀標準
+## 數據來源原則
+- DERIVATIVES_DAILY 為衍生品數據的唯一權威表
+- D-3 和 P2.5 不自行重算衍生品指標，只做摘要與解讀
+- 「量大於價」——期權量能比價格更能反映機構意圖
 
-解讀衍生品與槓桿相關數據時的判斷框架。
+## 核心衍生品指標解讀框架
 
----
+### Options
+- **OI/Volume**：高 OI + 高 Volume = 新倉位建立；高 OI + 低 Volume = 持倉觀望
+- **Put/Call Ratio**：極端值（>1.2 或 <0.5）可能為反向指標
+- **IV (Implied Volatility)**：IV 暴增 = 市場預期大波動；IV crush = 事件結束
+- **Skew**：負偏度加深 = 避險需求增加；正偏度 = 追高情緒
+- **Term Structure**：近月 > 遠月（Backwardation）= 近期恐慌
+- **GEX / Dealer Positioning**：
+  - 正 GEX = Dealer 反向對沖壓制波動
+  - 負 GEX = Dealer 順勢對沖放大波動
 
-## 核心指標
+### DISTORTION_RISK 判斷 (§8.4.3)
+判斷是否存在 gamma squeeze、ETF rebalance、槓桿 ETF 扭曲等非基本面驅動的價格行為。
+- HIGH 時禁止高信心突破判定
+- 輸出：NONE / LOW / MED / HIGH
 
-### 1. Open Interest (OI)
-- **OI 上升 + 價格上漲**：新多頭進場，趨勢確認
-- **OI 上升 + 價格下跌**：新空頭進場，看空壓力
-- **OI 下降 + 價格上漲**：空頭平倉，可能為軋空
-- **OI 下降 + 價格下跌**：多頭平倉，趨勢減弱
+### ICDZ 機構成本防守區 (§7.3.4)
+- 主要依據：近 2 季 13F 加倉時段的 VWAP
+- 輔助依據：Dark Pool 成交密集區
+- confidence 三維度：數據完整性 40% + 機構一致性 30% + 價格驗證 30%
 
-### 2. Gamma Exposure
-- **正 Gamma**：做市商與價格同向操作（穩定器）
-- **負 Gamma**：做市商與價格反向操作（放大器）
-- **Gamma Flip Point**：關鍵結構位，突破可能引發快速移動
-
-### 3. Implied Volatility (IV)
-- **IV Rank > 80%**：市場恐慌/預期大波動
-- **IV Rank < 20%**：市場自滿/低估風險
-- **IV Crush**：事件後波動率驟降
-
-### 4. Skew
-- **Put Skew > 1.1**：下行保護需求高（機構避險）
-- **Call Skew > 1.1**：上行投機需求高（散戶 FOMO）
-- **Skew 極端化**：市場單邊預期過度
-
----
-
-## DISTORTION_RISK 判定
-
-當以下條件出現時，須標記扭曲風險：
-
-| 等級 | 條件 |
-|------|------|
-| NONE | 無異常 |
-| LOW | 單一指標異常 |
-| MED | 兩項指標異常或 Gamma 負向 |
-| HIGH | ≥3 項異常或極端 Gamma/Skew |
-
----
-
-## 輸出格式
-
-```json
-{
-  "derivative_state": "NEUTRAL | BULLISH_TILT | BEARISH_TILT | HIGHLY_LEVERAGED",
-  "distortion_risk": "NONE | LOW | MED | HIGH",
-  "gamma_regime": "POSITIVE | NEGATIVE | NEAR_FLIP",
-  "vol_state": "LOW | NORMAL | ELEVATED | EXTREME",
-  "key_signals": ["OI_SURGE", "SKEW_EXTREME", "IV_CRUSH"],
-  "dealer_positioning": "LONG_GAMMA | SHORT_GAMMA | NEUTRAL"
-}
-```
-
----
-
-## 判定原則
-
-1. **HIGH 時禁止高信心突破**：改為 TRAP_RISK 或 WAIT_CONFIRMATION
-2. **多指標交叉驗證**：單一指標不可定論
-3. **結構位優先**：Gamma Flip Point 比絕對數值重要
+| Cat 狀態 | ICDZ 適用性 |
+|----------|-----------|
+| Cat 1 (Accumulation) | ✅ 高適用 |
+| Cat 2 (Markup) | ✅ 中適用 |
+| Cat 3 (Parabolic) | ❌ 不適用 |
+| Cat 4 (Pullback) | ✅ 高適用 |
+| Cat 5 (Markdown) | ⚠️ 低適用 |

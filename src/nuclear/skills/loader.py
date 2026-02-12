@@ -1,194 +1,192 @@
-"""
-Skill Loader - 載入與管理 Skills 模組
-
-用法：
-    from nuclear.skills import load_skill, load_skills_for_phase, get_schema
-    
-    # 載入單一 skill
-    content = load_skill("constitution/ssot_core", version="v1")
-    
-    # 載入 Phase 所需的所有 skills
-    skills = load_skills_for_phase("D3")
-    
-    # 取得輸出 schema
-    schema = get_schema("d3")
-"""
-
+# SSOT Reference: §2.9.2
+import os
 import json
 from pathlib import Path
-from typing import Optional
+from typing import Dict, List, Optional, Any
 
-# Skills 根目錄
-SKILLS_DIR = Path(__file__).parent
-
-# Phase → Skills 硬編碼映射（未來可升級為 config 或 Router）
-PHASE_SKILLS: dict[str, list[str]] = {
-    # Daily
-    "D1": ["constitution/ssot_core", "rubrics/evidence_protocol"],
-    "D2": ["constitution/ssot_core", "rubrics/evidence_protocol"],
-    "D3": [
-        "constitution/ssot_core",
-        "constitution/role_calibrator",
-        "rubrics/evidence_protocol",
-        "rubrics/narrative_link",
-        "rubrics/derivative_reading",
-    ],
-    "D4": [
-        "constitution/ssot_core",
-        "constitution/dsfp",
-        "rubrics/evidence_protocol",
-        "rubrics/narrative_link",
-        "rubrics/derivative_reading",
-    ],
-    # Weekly
-    "WB1": [
-        "constitution/ssot_core",
-        "constitution/dsfp",
-        "constitution/role_calibrator",
-        "rubrics/evidence_protocol",
-    ],
-    "WB2": [
-        "constitution/ssot_core",
-        "constitution/role_calibrator",
-        "rubrics/risk_overlay",
-        "rubrics/evidence_protocol",
-    ],
-    # P3
-    "P3": [
-        "constitution/ssot_core",
-        "constitution/role_calibrator",
-        "rubrics/tech_structure",
-        "rubrics/derivative_reading",
-        "rubrics/evidence_protocol",
-    ],
-    # P2.5
-    "P2.5": [
-        "constitution/ssot_core",
-        "constitution/dsfp",
-        "rubrics/derivative_reading",
-        "rubrics/evidence_protocol",
-    ],
+# Map Phases to required Skills
+PHASE_SKILLS_MAP = {
+    "P0":        ["ssot_core", "role_calibrator", "evidence_protocol"],
+    "P0.5":      ["ssot_core", "evidence_protocol", "narrative_link"],
+    "P0.7":      ["ssot_core", "evidence_protocol"],
+    "P1-1":      ["ssot_core", "role_calibrator"],
+    "P1-1.5":    ["evidence_protocol"],
+    "P1-2":      ["ssot_core", "role_calibrator", "evidence_protocol"],
+    "P2-1":      ["ssot_core", "evidence_protocol"],
+    "P2-2":      ["ssot_core", "role_calibrator", "evidence_protocol", "mispricing"],
+    "P2.5":      ["ssot_core", "evidence_protocol", "derivative_reading"],
+    "P3":        ["ssot_core", "role_calibrator", "tech_structure", "derivative_reading", "evidence_protocol"],
+    "P3-Delta":  ["ssot_core", "tech_structure"],
+    "D-3":       ["ssot_core", "role_calibrator", "evidence_protocol", "narrative_link", "derivative_reading"],
+    "D-4":       ["ssot_core", "dsfp", "evidence_protocol", "narrative_link", "derivative_reading"],
+    "WB-1":      ["ssot_core", "dsfp", "role_calibrator", "evidence_protocol"],
+    "WB-2":      ["ssot_core", "role_calibrator", "risk_overlay", "evidence_protocol"],
+    "W-A":       ["ssot_core", "role_calibrator", "evidence_protocol"],
+    "Monthly":   ["ssot_core", "evidence_protocol"],
+    "Quarterly": ["ssot_core", "evidence_protocol"],
 }
 
-# Phase → Schema 映射
-PHASE_SCHEMA: dict[str, str] = {
-    "D3": "d3_output.json",
-    "D4": "d4_output.json",
-    "WB1": "wb1_output.json",
-    "WB2": "wb2_output.json",
-    "P3": "p3_output.json",
+# Map Phases to Output JSON Schemas
+PHASE_SCHEMA_MAP = {
+    "D-3":       "d3_output.json",
+    "D-4":       "d4_output.json",
+    "WB-1":      "wb1_output.json",
+    "WB-2":      "wb2_output.json",
+    "P3":        "p3_output.json",
+    "P3-Delta":  "p3_delta_output.json",
 }
 
+class SkillNotFoundError(Exception):
+    pass
 
-def load_skill(skill_id: str, version: str = "v1") -> str:
-    """
-    載入單一 skill 內容
-    
-    Args:
-        skill_id: Skill 路徑，例如 "constitution/ssot_core"
-        version: 版本號，預設 "v1"
-    
-    Returns:
-        Skill 內容（markdown 字串）
-    
-    Raises:
-        FileNotFoundError: 找不到 skill 檔案
-    """
-    # 構建檔案路徑
-    skill_path = SKILLS_DIR / f"{skill_id}_{version}.md"
-    
-    if not skill_path.exists():
-        raise FileNotFoundError(f"Skill not found: {skill_path}")
-    
-    return skill_path.read_text(encoding="utf-8")
+class PhaseNotFoundError(Exception):
+    pass
 
+class SchemaNotFoundError(Exception):
+    pass
 
-def load_skills_for_phase(phase: str) -> list[str]:
+class SkillLoader:
     """
-    載入指定 Phase 所需的所有 skills 內容
-    
-    Args:
-        phase: Phase 名稱，例如 "D3", "WB1", "P3"
-    
-    Returns:
-        Skills 內容列表
-    
-    Raises:
-        ValueError: 未知的 Phase
+    Skills 模組化系統的核心載入器 (§2.9.2).
     """
-    phase_upper = phase.upper()
-    
-    if phase_upper not in PHASE_SKILLS:
-        raise ValueError(f"Unknown phase: {phase}. Available: {list(PHASE_SKILLS.keys())}")
-    
-    skills = []
-    for skill_id in PHASE_SKILLS[phase_upper]:
+
+    def __init__(self, base_path: Optional[str] = None):
+        if base_path:
+            self.base_path = Path(base_path)
+        else:
+            # Default to current file's directory
+            self.base_path = Path(__file__).parent
+
+    def load_skill(self, skill_id: str, version: str = "v1") -> str:
+        """
+        Loads a single skill markdown file.
+        Automatically checks 'constitution' or 'rubrics' folder.
+        """
+        filename = f"{skill_id}_{version}.md"
+        
+        # Determine category
+        if skill_id in ["ssot_core", "dsfp", "role_calibrator"]:
+            category = "constitution"
+        else:
+            category = "rubrics"
+            
+        file_path = self.base_path / category / filename
+        
+        if not file_path.exists():
+            raise SkillNotFoundError(f"Skill file not found: {file_path}")
+            
         try:
-            content = load_skill(skill_id)
-            skills.append(content)
-        except FileNotFoundError as e:
-            # 記錄警告但不中斷
-            print(f"Warning: {e}")
-    
-    return skills
+            return file_path.read_text(encoding="utf-8")
+        except Exception as e:
+            raise SkillNotFoundError(f"Error reading skill {skill_id}: {e}")
 
+    def load_skills_for_phase(self, phase: str) -> Dict[str, str]:
+        """
+        Loads all required skills for a given phase as a dictionary.
+        """
+        if phase not in PHASE_SKILLS_MAP:
+            raise PhaseNotFoundError(f"Phase {phase} not defined in PHASE_SKILLS_MAP")
+            
+        required_skills = PHASE_SKILLS_MAP[phase]
+        loaded_content = {}
+        
+        for skill_id in required_skills:
+            loaded_content[skill_id] = self.load_skill(skill_id)
+            
+        return loaded_content
 
-def get_skill_ids_for_phase(phase: str) -> list[str]:
-    """
-    取得指定 Phase 所需的 skill IDs（不載入內容）
-    
-    Args:
-        phase: Phase 名稱
-    
-    Returns:
-        Skill ID 列表
-    """
-    phase_upper = phase.upper()
-    return PHASE_SKILLS.get(phase_upper, [])
-
-
-def get_schema(phase: str) -> Optional[dict]:
-    """
-    取得指定 Phase 的輸出 JSON Schema
-    
-    Args:
-        phase: Phase 名稱，例如 "D3", "WB1"
-    
-    Returns:
-        JSON Schema dict，或 None 如果無對應 schema
-    """
-    phase_upper = phase.upper()
-    
-    if phase_upper not in PHASE_SCHEMA:
-        return None
-    
-    schema_path = SKILLS_DIR / "schemas" / PHASE_SCHEMA[phase_upper]
-    
-    if not schema_path.exists():
-        return None
-    
-    return json.loads(schema_path.read_text(encoding="utf-8"))
-
-
-def list_available_skills() -> dict[str, list[str]]:
-    """
-    列出所有可用的 skills
-    
-    Returns:
-        按類別分組的 skill 列表
-    """
-    result = {
-        "constitution": [],
-        "rubrics": [],
-        "schemas": [],
-    }
-    
-    for category in result.keys():
-        category_dir = SKILLS_DIR / category
-        if category_dir.exists():
-            if category == "schemas":
-                result[category] = [f.stem for f in category_dir.glob("*.json")]
+    def get_schema(self, phase: str) -> Optional[Dict[str, Any]]:
+        """
+        Retrieves the JSON Schema for a phase's output.
+        Returns None if no schema is defined for the phase.
+        """
+        if phase not in PHASE_SCHEMA_MAP:
+            # Check if phase is valid but just has no schema
+            if phase in PHASE_SKILLS_MAP:
+                return None
             else:
-                result[category] = [f.stem for f in category_dir.glob("*.md")]
-    
-    return result
+                # Optional: could raise PhaseNotFoundError here too, 
+                # but map check implies we only have schemas for subset.
+                # If phase is totally unknown, return None is safer or raise?
+                # Prompt says: "無 schema 的 Phase → 返回 None"
+                return None
+                
+        schema_filename = PHASE_SCHEMA_MAP[phase]
+        schema_path = self.base_path / "schemas" / schema_filename
+        
+        if not schema_path.exists():
+            raise SchemaNotFoundError(f"Schema file not found: {schema_path}")
+            
+        try:
+            with open(schema_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            raise SchemaNotFoundError(f"Error parsing schema {schema_filename}: {e}")
+
+    def list_available_skills(self) -> List[Dict[str, str]]:
+        """
+        Lists all available skills found in the directories.
+        """
+        skills = []
+        
+        # Constitution
+        const_dir = self.base_path / "constitution"
+        if const_dir.exists():
+            for f in const_dir.glob("*_v1.md"):
+                skill_id = f.stem.replace("_v1", "")
+                skills.append({
+                    "id": skill_id,
+                    "version": "v1",
+                    "category": "constitution",
+                    "file_path": str(f)
+                })
+                
+        # Rubrics
+        rubric_dir = self.base_path / "rubrics"
+        if rubric_dir.exists():
+            for f in rubric_dir.glob("*_v1.md"):
+                skill_id = f.stem.replace("_v1", "")
+                skills.append({
+                    "id": skill_id,
+                    "version": "v1",
+                    "category": "rubrics",
+                    "file_path": str(f)
+                })
+                
+        return skills
+
+    def list_phases(self) -> List[str]:
+        """
+        Lists all registered phases.
+        """
+        return list(PHASE_SKILLS_MAP.keys())
+
+    def validate_skill_integrity(self) -> Dict[str, Any]:
+        """
+        Checks if all mapped skills and schemas actually exist on disk.
+        """
+        missing_skills = []
+        missing_schemas = []
+        
+        # Check all skills in map
+        all_skills = set()
+        for skills in PHASE_SKILLS_MAP.values():
+            all_skills.update(skills)
+            
+        for skill_id in all_skills:
+            try:
+                self.load_skill(skill_id)
+            except SkillNotFoundError:
+                missing_skills.append(skill_id)
+                
+        # Check all schemas in map
+        for phase, filename in PHASE_SCHEMA_MAP.items():
+            schema_path = self.base_path / "schemas" / filename
+            if not schema_path.exists():
+                missing_schemas.append(f"{phase}:{filename}")
+                
+        return {
+            "missing_skills": missing_skills,
+            "missing_schemas": missing_schemas,
+            "valid": len(missing_skills) == 0 and len(missing_schemas) == 0
+        }

@@ -1,169 +1,154 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "WB2_Output",
-    "description": "WB-2 個股策略與掛單輸出格式 (Weekly Orders)",
+    "title": "WB2_Strategy_Output",
+    "description": "WB-2 策略制定與掛單執行層 AI 輸出 (§12.3.4)",
     "type": "object",
     "required": [
-        "generated_at",
-        "worldview_version",
-        "orders"
+        "ticker",
+        "final_buy_1",
+        "final_buy_2",
+        "final_buy_3",
+        "final_sell",
+        "final_stop",
+        "size_multiplier",
+        "cash_bias",
+        "concentration_bias",
+        "urgency",
+        "no_trade_flag",
+        "rationale"
     ],
     "properties": {
-        "generated_at": {
+        "ticker": {
+            "type": "string"
+        },
+        "final_buy_1": {
+            "type": "number"
+        },
+        "final_buy_2": {
+            "type": "number"
+        },
+        "final_buy_3": {
+            "type": "number"
+        },
+        "final_sell": {
+            "type": "number"
+        },
+        "final_stop": {
+            "type": "number"
+        },
+        "size_multiplier": {
+            "type": "number",
+            "minimum": 0
+        },
+        "cash_bias": {
             "type": "string",
-            "format": "date-time"
+            "enum": [
+                "increase",
+                "neutral",
+                "decrease"
+            ]
         },
-        "worldview_version": {
+        "concentration_bias": {
             "type": "string",
-            "description": "引用的世界觀版本號"
+            "enum": [
+                "focus",
+                "neutral",
+                "diversify"
+            ]
         },
-        "orders": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "required": [
-                    "ticker",
-                    "worldview_version",
-                    "identity_context",
-                    "action"
-                ],
-                "properties": {
-                    "ticker": {
-                        "type": "string"
-                    },
-                    "worldview_version": {
-                        "type": "string"
-                    },
-                    "identity_context": {
-                        "type": "object",
-                        "required": [
-                            "asset_id",
-                            "identity_label",
-                            "narrative"
-                        ],
-                        "properties": {
-                            "asset_id": {
-                                "type": "string"
-                            },
-                            "identity_label": {
-                                "type": "string"
-                            },
-                            "narrative": {
-                                "type": "string",
-                                "maxLength": 200
-                            }
-                        }
-                    },
-                    "action": {
-                        "enum": [
-                            "BUY",
-                            "SELL",
-                            "HOLD",
-                            "REDUCE",
-                            "INCREASE",
-                            "EXIT"
-                        ]
-                    },
-                    "order_type": {
-                        "enum": [
-                            "LIMIT",
-                            "STOP_LIMIT",
-                            "BRACKET",
-                            "MARKET"
-                        ]
-                    },
-                    "order_details": {
-                        "type": "object",
-                        "properties": {
-                            "limit_price": {
-                                "type": "number"
-                            },
-                            "stop_price": {
-                                "type": "number"
-                            },
-                            "quantity": {
-                                "type": "number"
-                            },
-                            "quantity_pct": {
-                                "type": "number",
-                                "description": "倉位百分比"
-                            }
-                        }
-                    },
-                    "gtd": {
-                        "type": "string",
-                        "format": "date",
-                        "description": "訂單有效期 (Good Till Date)"
-                    },
-                    "execution_preference": {
-                        "enum": [
-                            "ADAPTIVE",
-                            "SNAP_PRIMARY",
-                            "LIMIT_ONLY"
-                        ]
-                    },
-                    "rationale": {
-                        "type": "object",
-                        "properties": {
-                            "primary_factors": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "weight_distribution": {
-                                "type": "object",
-                                "properties": {
-                                    "fundamental": {
-                                        "type": "number"
-                                    },
-                                    "chips": {
-                                        "type": "number"
-                                    },
-                                    "tech": {
-                                        "type": "number"
-                                    },
-                                    "macro": {
-                                        "type": "number"
-                                    },
-                                    "sentiment": {
-                                        "type": "number"
-                                    }
-                                }
-                            },
-                            "evidence_ids": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    "risk_overlay_applied": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
+        "urgency": {
+            "type": "string",
+            "enum": [
+                "high",
+                "medium",
+                "low"
+            ]
         },
-        "portfolio_summary": {
+        "no_trade_flag": {
+            "type": "boolean"
+        },
+        "skeleton_status_note": {
+            "type": "string",
+            "enum": [
+                "CURRENT",
+                "STALE_ADJUSTED",
+                "N/A"
+            ]
+        },
+        "valuation_brake_override": {
             "type": "object",
             "properties": {
-                "total_exposure": {
+                "applied": {
+                    "type": "boolean"
+                },
+                "final_brake": {
                     "type": "number"
                 },
-                "sector_exposure": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "number"
+                "reasoning": {
+                    "type": "string"
+                }
+            }
+        },
+        "sector_flag_assessment": {
+            "type": "object",
+            "properties": {
+                "flags_received": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     }
                 },
-                "cash_pct": {
+                "impact_on_this_stock": {
+                    "type": "string"
+                },
+                "adjustment": {
+                    "type": "number",
+                    "minimum": 0.75,
+                    "maximum": 1.15
+                }
+            }
+        },
+        "thesis_broken_check": {
+            "type": "object",
+            "properties": {
+                "severity": {
+                    "type": "string",
+                    "enum": [
+                        "NONE",
+                        "WARNING",
+                        "CRITICAL"
+                    ]
+                },
+                "impact_on_strategy": {
+                    "type": "string"
+                }
+            }
+        },
+        "trailing_stop_config": {
+            "type": "object",
+            "description": "Cat=3 持倉的 trailing stop 配置 (§11.3)",
+            "properties": {
+                "trailing_pct": {
+                    "type": "number"
+                },
+                "ma_reference": {
+                    "type": "string",
+                    "enum": [
+                        "MA10",
+                        "MA20"
+                    ]
+                },
+                "exit_ratio": {
+                    "type": "number"
+                },
+                "core_holding_max_exit": {
                     "type": "number"
                 }
             }
+        },
+        "rationale": {
+            "type": "string",
+            "minLength": 1
         }
     }
 }

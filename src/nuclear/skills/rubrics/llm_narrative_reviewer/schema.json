@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "LLMNarrativeReviewResult",
+    "type": "object",
+    "properties": {
+        "agreement": {
+            "type": "boolean"
+        },
+        "concerns": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "alt_narrative": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "agreement",
+        "concerns",
+        "alt_narrative"
+    ]
+}

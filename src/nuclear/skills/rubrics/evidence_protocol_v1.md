@@ -1,75 +1,46 @@
-# Evidence Protocol v1
-# Version: 1.0
-# Source: V8.0架構定案文檔_SSOT.md (白名單數據源原則)
-# Last Updated: 2026-02-05
+# 證據協議方法論 V1
 
-## 證據引用協議
+## 證據標準
 
-定義數據來源、證據格式與禁止事項。
+### 可驗證性要求 (Article 1)
+每個結論必須附帶：
+- 未來 1～3 個關鍵驗證訊號
+- 時間窗口
+- 若無法轉成未來驗證點 → 視為低價值輸出
 
----
+### 因果完整性 (Article 4)
+所有結論必須包含：
+- 因果來源（Cause）
+- 傳導路徑（Transmission）
+- 市場反應機制（Market Mechanism）
+- 時間尺度（Time Scale）
 
-## Evidence ID 格式
+推論不可跳步。不確定時須標註。
 
-所有引用的證據必須包含唯一 ID：
+### 反敘事義務 (Article 5)
+- 若提出隱含解釋 → 必須同時提出至少一個反向解釋
+- 需說明「為何主敘事勝出」的理由
+- 發現敘事與數據不一致時須標記
 
-```
-[SOURCE_TYPE]_[DATE]_[SEQUENCE]
-```
+## 結論邊界原則 (§1.8)
 
-範例：
-- `NEWS_20260205_001` - 新聞來源
-- `FILING_10K_20260131_001` - SEC 財報
-- `OHLCV_20260204_NVDA` - 價格數據
-- `FLOW_13F_20260115_001` - 13F 籌碼
+### 允許的結論類型（研究員 P0-P3）
+✅ Risk Profile 評級
+✅ Growth 動能
+✅ Cat 分類
+✅ 宏觀子世界狀態
+✅ 產業邏輯必然性
 
----
+### 禁止的結論類型（研究員 P0-P3）
+❌ "因此總體應加碼/減碼"
+❌ "建議立即出清"
+❌ "現金水位應提高"
 
-## Source Tags
+### 策略長裁決（WB-1/WB-2/W-A）
+唯一有權輸出：偏多偏空、現金水位、集中分散、行動指令
 
-| Tag | 說明 |
-|-----|------|
-| `OFFICIAL` | 官方來源（SEC、財報、公告）|
-| `MARKET_DATA` | 市場數據（OHLCV、OI、IV）|
-| `INSTITUTIONAL` | 機構數據（13F、ETF Flow）|
-| `NEWS` | 新聞報導（須標明來源可信度）|
-| `DERIVED` | 衍生計算（須標明計算公式）|
-| `INFERRED` | 推論結果（須標明假設）|
-
----
-
-## 禁止事項
-
-### ❌ 絕對禁止
-1. **腦補**：無證據的推論
-2. **自行搜尋**：AI 不得自行搜尋數據
-3. **混用來源**：同一分析中混用不同計算方式的財報數據
-4. **隱藏假設**：推論必須標明所有假設
-
-### ⚠️ 須標記
-1. **INFERRED**：任何推論須標記
-2. **UNCERTAIN**：信心度 < 0.6 須標記
-3. **INCOMPLETE**：資料不完整須標記
-
----
-
-## 輸出格式
-
-```json
-{
-  "evidence_ids": ["NEWS_20260205_001", "OHLCV_20260204_NVDA"],
-  "source_tags": ["OFFICIAL", "MARKET_DATA"],
-  "data_completeness": "COMPLETE | PARTIAL | INSUFFICIENT",
-  "confidence_level": 0.0-1.0,
-  "assumptions": ["假設列表"],
-  "caveats": ["注意事項"]
-}
-```
-
----
-
-## 驗證規則
-
-1. 每個結論必須至少有一個 evidence_id
-2. INFERRED 類結論必須列出 assumptions
-3. 資料不足時標記 `INSUFFICIENT_DATA`，**不得繼續推論**
+## 最低必要證據
+每個評級都必須附上：
+- 具體數值
+- vs_peers 比較
+- source（數據來源）

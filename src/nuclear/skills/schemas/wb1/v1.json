@@ -1,0 +1,46 @@
+{
+    "title": "WB1Output",
+    "type": "object",
+    "properties": {
+        "worldview_version": {
+            "type": "string"
+        },
+        "world_state_snapshot": {
+            "type": "object"
+        },
+        "asset_identity_map": {
+            "type": "object"
+        },
+        "narrative_map": {
+            "type": "object"
+        },
+        "identity_shift_signals_summary": {
+            "type": "object"
+        },
+        "framework_stability_score": {
+            "type": "number"
+        },
+        "rebuild_recommendation": {
+            "type": "boolean"
+        },
+        "rebuild_reason_top5": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "dsfp_evidence_refs": {
+            "type": "array",
+            "items": {
+                "type": "object"
+            }
+        }
+    },
+    "required": [
+        "worldview_version",
+        "world_state_snapshot",
+        "asset_identity_map",
+        "narrative_map",
+        "identity_shift_signals_summary"
+    ]
+}

@@ -1,148 +1,137 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "WB1_Output",
-    "description": "WB-1 世界觀裁決輸出格式 (Weekly Worldview)",
+    "title": "WB1_Weekly_Analysis_Output",
+    "description": "WB-1 世界觀與身份裁決層輸出 (§12.1.11)",
     "type": "object",
     "required": [
-        "worldview_version",
-        "generated_at",
-        "world_state_snapshot",
-        "asset_identity_map",
-        "framework_stability"
+        "global_assessment",
+        "per_stock_assessments"
     ],
     "properties": {
-        "worldview_version": {
-            "type": "string",
-            "pattern": "^WV_\\d{8}_\\d{3}$",
-            "description": "世界觀版本號 (WV_YYYYMMDD_SEQ)"
-        },
-        "generated_at": {
-            "type": "string",
-            "format": "date-time"
-        },
-        "world_state_snapshot": {
+        "global_assessment": {
             "type": "object",
             "required": [
                 "market_regime",
-                "risk_appetite",
-                "dominant_narratives"
+                "risk_environment",
+                "worldview_changed",
+                "worldview_change_severity",
+                "defcon_level",
+                "defcon_ai_adjustment"
             ],
             "properties": {
                 "market_regime": {
+                    "type": "string",
                     "enum": [
-                        "RISK_ON",
-                        "RISK_OFF",
-                        "TRANSITIONING",
-                        "UNCERTAIN"
+                        "Bull",
+                        "Bear",
+                        "Range",
+                        "Crisis"
                     ]
                 },
-                "risk_appetite": {
-                    "enum": [
-                        "HIGH",
-                        "MODERATE",
-                        "LOW",
-                        "DEFENSIVE"
-                    ]
+                "risk_environment": {
+                    "type": "string"
                 },
-                "dominant_narratives": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "maxItems": 5
+                "global_overlays": {
+                    "type": "object"
+                },
+                "worldview_changed": {
+                    "type": "boolean"
+                },
+                "worldview_change_severity": {
+                    "type": "string",
+                    "enum": [
+                        "MINOR",
+                        "MAJOR"
+                    ]
                 },
                 "defcon_level": {
                     "type": "integer",
                     "minimum": 1,
                     "maximum": 5
-                }
-            }
-        },
-        "asset_identity_map": {
-            "type": "object",
-            "additionalProperties": {
-                "type": "object",
-                "required": [
-                    "identity_label",
-                    "narrative"
-                ],
-                "properties": {
-                    "identity_label": {
-                        "type": "string"
-                    },
-                    "narrative": {
-                        "type": "string",
-                        "maxLength": 200
-                    },
-                    "identity_drift": {
-                        "type": "boolean"
-                    },
-                    "dsfp_modules_changed": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 5
-                    }
-                }
-            }
-        },
-        "narrative_map": {
-            "type": "object",
-            "additionalProperties": {
-                "type": "object",
-                "properties": {
-                    "status": {
-                        "enum": [
-                            "ACTIVE",
-                            "FADING",
-                            "PIVOTING",
-                            "DORMANT"
-                        ]
-                    },
-                    "strength": {
-                        "type": "number",
-                        "minimum": 0,
-                        "maximum": 1
-                    },
-                    "key_triggers": {
-                        "type": "array",
-                        "items": {
+                },
+                "defcon_ai_adjustment": {
+                    "type": "object",
+                    "required": [
+                        "original",
+                        "adjusted",
+                        "reasoning"
+                    ],
+                    "properties": {
+                        "original": {
+                            "type": "integer"
+                        },
+                        "adjusted": {
+                            "type": "integer"
+                        },
+                        "reasoning": {
                             "type": "string"
+                        }
+                    }
+                },
+                "sub_world_highlights": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "world": {
+                                "type": "string"
+                            },
+                            "regime": {
+                                "type": "string"
+                            },
+                            "conflict_with": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
             }
         },
-        "framework_stability": {
-            "type": "object",
-            "required": [
-                "score",
-                "rebuild_recommendation"
-            ],
-            "properties": {
-                "score": {
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "description": "1=穩定, 0=需重建"
-                },
-                "rebuild_recommendation": {
-                    "type": "boolean"
-                },
-                "rebuild_reason_top5": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "maxItems": 5
-                }
-            }
-        },
-        "escalation_tickers": {
+        "per_stock_assessments": {
             "type": "array",
             "items": {
-                "type": "string"
-            },
-            "description": "需重度更新的個股清單"
+                "type": "object",
+                "required": [
+                    "ticker",
+                    "identity_status",
+                    "identity_drift",
+                    "framework_changed"
+                ],
+                "properties": {
+                    "ticker": {
+                        "type": "string"
+                    },
+                    "identity_status": {
+                        "type": "string"
+                    },
+                    "identity_drift": {
+                        "type": "boolean"
+                    },
+                    "identity_drift_reasoning": {
+                        "type": "string"
+                    },
+                    "framework_changed": {
+                        "type": "boolean"
+                    },
+                    "escalation_triggers": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "alpha_classification": {
+                        "type": "string",
+                        "enum": [
+                            "INDEPENDENT_ALPHA",
+                            "CYCLE_DEPENDENT",
+                            "UNCLEAR"
+                        ]
+                    },
+                    "alpha_reasoning": {
+                        "type": "string"
+                    }
+                }
+            }
         }
     }
 }

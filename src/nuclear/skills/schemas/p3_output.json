@@ -1,244 +1,239 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "P3_Output",
-    "description": "P3 技術分析輸出格式",
+    "title": "P3_Strategy_Skeleton",
+    "description": "P3 技術面與機構視角完整版輸出 (§8.6)",
     "type": "object",
     "required": [
         "ticker",
-        "analysis_date",
-        "weekly_structure",
-        "daily_structure",
-        "category",
-        "signals"
+        "cat",
+        "cat_confidence",
+        "cat_reasoning",
+        "support_levels",
+        "resistance_levels",
+        "trend_structure",
+        "risk_overlay_level",
+        "distortion_risk",
+        "rs_score_5d",
+        "rs_score_20d",
+        "buy_prices",
+        "stop_prices",
+        "weekly_trend",
+        "volume_profile"
     ],
     "properties": {
         "ticker": {
             "type": "string"
         },
-        "analysis_date": {
+        "cat": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+        },
+        "cat_confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+        },
+        "cat_reasoning": {
             "type": "string",
-            "format": "date"
+            "minLength": 1
         },
-        "weekly_structure": {
-            "type": "object",
-            "required": [
-                "trend_state",
-                "structure_type"
-            ],
-            "properties": {
-                "trend_state": {
-                    "enum": [
-                        "UPTREND",
-                        "DOWNTREND",
-                        "RANGE",
-                        "TRANSITION"
-                    ]
-                },
-                "structure_type": {
-                    "enum": [
-                        "ACCUMULATION",
-                        "DISTRIBUTION",
-                        "BREAKOUT",
-                        "BREAKDOWN",
-                        "LATE_STAGE",
-                        "NEUTRAL"
-                    ]
-                },
-                "key_levels": {
-                    "type": "object",
-                    "properties": {
-                        "support": {
-                            "type": "number"
-                        },
-                        "resistance": {
-                            "type": "number"
-                        },
-                        "ma20w": {
-                            "type": "number"
-                        },
-                        "ma50w": {
-                            "type": "number"
-                        }
-                    }
-                },
-                "volume_profile": {
-                    "enum": [
-                        "HEALTHY",
-                        "DIVERGENT",
-                        "CLIMACTIC",
-                        "DRY"
-                    ]
-                }
-            }
+        "cat_reversal_evidence": {
+            "type": [
+                "string",
+                "null"
+            ]
         },
-        "daily_structure": {
-            "type": "object",
-            "properties": {
-                "trigger_type": {
-                    "enum": [
-                        "BREAKOUT",
-                        "PULLBACK",
-                        "REVERSAL",
-                        "CONTINUATION",
-                        "NONE"
-                    ]
-                },
-                "entry_zone": {
-                    "type": "object",
-                    "properties": {
-                        "low": {
-                            "type": "number"
-                        },
-                        "high": {
-                            "type": "number"
-                        }
-                    }
-                },
-                "stop_loss": {
-                    "type": "number"
-                },
-                "target_1": {
-                    "type": "number"
-                },
-                "target_2": {
-                    "type": "number"
-                }
-            }
-        },
-        "category": {
-            "type": "object",
-            "required": [
-                "cat",
-                "confidence"
-            ],
-            "properties": {
-                "cat": {
-                    "enum": [
-                        "MOMENTUM_BUY",
-                        "PULLBACK_BUY",
-                        "BREAKOUT_WATCH",
-                        "HOLD",
-                        "REDUCE",
-                        "EXIT",
-                        "AVOID",
-                        "TRAP_ALERT"
-                    ]
-                },
-                "confidence": {
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1
-                },
-                "rationale": {
-                    "type": "string",
-                    "maxLength": 200
-                }
-            }
-        },
-        "signals": {
-            "type": "object",
-            "properties": {
-                "rs_vs_index": {
-                    "type": "number",
-                    "description": "相對強度"
-                },
-                "rs_interpretation": {
-                    "enum": [
-                        "OUTPERFORMING",
-                        "INLINE",
-                        "UNDERPERFORMING"
-                    ]
-                },
-                "trap_risk": {
-                    "enum": [
-                        "NONE",
-                        "LOW",
-                        "MEDIUM",
-                        "HIGH"
-                    ]
-                },
-                "trap_type": {
-                    "enum": [
-                        "BULL_TRAP",
-                        "BEAR_TRAP",
-                        "NONE"
-                    ]
-                },
-                "distortion_risk": {
-                    "enum": [
-                        "NONE",
-                        "LOW",
-                        "MED",
-                        "HIGH"
-                    ]
-                }
-            }
-        },
-        "derivative_overlay": {
-            "type": "object",
-            "properties": {
-                "oi_signal": {
-                    "type": "string"
-                },
-                "gamma_state": {
-                    "enum": [
-                        "POSITIVE",
-                        "NEGATIVE",
-                        "NEAR_FLIP"
-                    ]
-                },
-                "iv_rank": {
-                    "type": "number"
-                },
-                "dealer_positioning": {
-                    "enum": [
-                        "LONG_GAMMA",
-                        "SHORT_GAMMA",
-                        "NEUTRAL"
-                    ]
-                }
-            }
-        },
-        "re_entry": {
-            "type": "object",
-            "properties": {
-                "eligible": {
-                    "type": "boolean"
-                },
-                "re_entry_price": {
-                    "type": "number"
-                },
-                "conditions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "verification_points": {
+        "support_levels": {
             "type": "array",
             "items": {
                 "type": "object",
+                "required": [
+                    "price",
+                    "strength",
+                    "type"
+                ],
                 "properties": {
-                    "signal": {
+                    "price": {
+                        "type": "number"
+                    },
+                    "strength": {
                         "type": "string"
                     },
-                    "time_window": {
-                        "type": "string"
-                    },
-                    "falsification_condition": {
+                    "type": {
                         "type": "string"
                     }
                 }
-            },
-            "maxItems": 3
+            }
         },
-        "evidence_ids": {
+        "resistance_levels": {
             "type": "array",
             "items": {
-                "type": "string"
+                "type": "object",
+                "required": [
+                    "price",
+                    "strength",
+                    "type"
+                ],
+                "properties": {
+                    "price": {
+                        "type": "number"
+                    },
+                    "strength": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                }
             }
+        },
+        "trend_structure": {
+            "type": "string",
+            "enum": [
+                "BULLISH",
+                "BEARISH",
+                "NEUTRAL",
+                "TRANSITIONING"
+            ]
+        },
+        "icdz_applied": {
+            "type": "boolean"
+        },
+        "icdz_range": {
+            "type": [
+                "object",
+                "null"
+            ],
+            "properties": {
+                "lower": {
+                    "type": "number"
+                },
+                "upper": {
+                    "type": "number"
+                },
+                "confidence": {
+                    "type": "number"
+                }
+            }
+        },
+        "risk_overlay_level": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3
+        },
+        "distortion_risk": {
+            "type": "string",
+            "enum": [
+                "NONE",
+                "LOW",
+                "MED",
+                "HIGH"
+            ]
+        },
+        "rs_score_5d": {
+            "type": "number"
+        },
+        "rs_score_20d": {
+            "type": "number"
+        },
+        "re_entry_signal": {
+            "type": "boolean"
+        },
+        "re_entry_price": {
+            "type": [
+                "number",
+                "null"
+            ]
+        },
+        "fpe_a": {
+            "type": [
+                "number",
+                "null"
+            ]
+        },
+        "fpe_b": {
+            "type": [
+                "number",
+                "null"
+            ]
+        },
+        "fpe_b_vs_peers_pct": {
+            "type": [
+                "number",
+                "null"
+            ]
+        },
+        "fpe_divergence": {
+            "type": [
+                "number",
+                "null"
+            ]
+        },
+        "valuation_flag": {
+            "type": "string",
+            "enum": [
+                "VALUATION_ATTRACTIVE",
+                "VALUATION_STRETCHED",
+                "FPE_DIVERGENCE_ALERT",
+                "NONE"
+            ]
+        },
+        "buy_prices": {
+            "type": "object",
+            "required": [
+                "buy1",
+                "buy2",
+                "buy3"
+            ],
+            "properties": {
+                "buy1": {
+                    "type": "number"
+                },
+                "buy2": {
+                    "type": "number"
+                },
+                "buy3": {
+                    "type": "number"
+                }
+            }
+        },
+        "stop_prices": {
+            "type": "object",
+            "required": [
+                "stop1",
+                "stop2"
+            ],
+            "properties": {
+                "stop1": {
+                    "type": "number"
+                },
+                "stop2": {
+                    "type": "number"
+                }
+            }
+        },
+        "weekly_trend": {
+            "type": "string"
+        },
+        "volume_profile": {
+            "type": "string"
+        },
+        "alpha_exempt": {
+            "type": "boolean"
+        },
+        "next_delta_run_date": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "format": "date"
+        },
+        "snapshot_id": {
+            "type": "string"
+        },
+        "version_chain_id": {
+            "type": "string"
         }
     }
 }

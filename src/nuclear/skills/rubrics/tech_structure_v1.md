@@ -1,81 +1,48 @@
-# Technical Structure Template v1
-# Version: 1.0
-# Source: V8.0架構定案文檔_SSOT.md (P3 設計)
-# Last Updated: 2026-02-05
+# 技術結構分析方法論 V1
 
-## 技術結構判讀模板
+## 機構級預測視角 (§3.1)
 
-多時間維度分析框架：週 → 日 → 盤中
+P3 的本質不是「技術分析」，而是機構級預測。
 
----
+- **視角**：以機構主力、大型對沖基金的視角來分析
+- **目標**：「預測未來」，而不是套用公式
+- **邏輯**：「量大於價」、解釋主力行為、判斷真正意圖、預測未來操作
+- **執行**：跟著主力來順風獲利
+- **禁止**：禁止輸出「根據 RSI、MACD、均線、支撐壓力」等程式就能算的結論
 
-## 時間層級原則
+## Cat 1-5 趨勢位階定義 (§8.4.1)
 
-**鐵律**：高時間尺度觀點 > 低時間尺度觀點
-- WEEKLY > DAILY > INTRADAY
-- 若 WEEKLY 為空頭，DAILY 多頭訊號只能當反彈，不可當趨勢反轉
+| Cat | 名稱 | 說明 |
+|-----|------|------|
+| Cat 1 | Accumulation（吸籌） | 低基期箱體震盪，量縮，主力靜默吸貨 |
+| Cat 2 | Markup（啟動主升） | 突破箱體，高低點墊高，量增價漲 |
+| Cat 3 | Parabolic（拋物線加速） | 加速噴出，乖離率擴大，需緊盯耗竭訊號 |
+| Cat 4 | Pullback/Distribution | 高檔量增價滯或回調，判斷洗盤還是出貨 |
+| Cat 5 | Markdown（下跌趨勢） | 趨勢破壞，低點破前低，結構性下跌 |
 
----
+Cat 正常演進方向：1→2→3→4→5。
+逆向轉換需要充足的結構證據。
 
-## 週線結構判定
+## P3 核心分析要點 (§8.5)
 
-### 趨勢狀態
-- **UPTREND**：價格 > MA20W > MA50W，高點低點上移
-- **DOWNTREND**：價格 < MA20W < MA50W，高點低點下移
-- **RANGE**：價格在 MA20W/MA50W 之間震盪
-- **TRANSITION**：從一狀態轉換至另一狀態
+1. 趨勢階段判斷：當前處於什麼階段？理由？
+2. 主力行為判斷：爆量後量縮 + 價格整理 = 吸籌/洗盤/出貨？
+3. 籌碼結構：鎖碼（集中）還是散亂（分散）？
+4. 期權影響：最大 OI 履約價是壓力還是支撐？Gamma pin 效應？
+5. 價量背離：價格創新高但量能未跟上 = 假突破？
+6. 掛單建議：基於支撐/壓力/量價，建議 Buy1/2/3 和 Stop2/3 價位
 
-### 週線結構類型
-- **ACCUMULATION**：低位放量，籌碼收集
-- **DISTRIBUTION**：高位放量，籌碼派發
-- **BREAKOUT**：突破關鍵結構位
-- **BREAKDOWN**：跌破關鍵結構位
-- **LATE_STAGE**：趨勢末端特徵
+## Bull Trap 防禦（硬規則）
+若 WEEKLY_STRUCTURE = DISTRIBUTION 或 LATE_STAGE →
+日線突破不得產出 MOMENTUM_BUY，至多 FAKE_BREAKOUT / TRAP_ALERT。
 
----
+## 迴力鏢協議 (§8.4.4)
+觸發條件（全部滿足）：
+- P2 基本面評級未降
+- Cat ≠ Cat 3 或 Cat 4 明確 Distribution
+- 跌破關鍵位時間 < 5 trading days
+- 量能放大或收盤站回關鍵結構位
 
-## 日線結構判定
-
-僅用於：
-1. 進場時機確認
-2. 短期觸發點識別
-3. 驗證週線結構
-
-**禁止**：用日線推翻週線結構
-
----
-
-## Bull Trap 識別
-
-**條件**：週線 DISTRIBUTION / LATE_STAGE + 日線 ACCUMULATION 型態
-**結論**：標記 FAKE_BREAKOUT / TRAP_ALERT
-**禁止**：產出 MOMENTUM_BUY
-
----
-
-## 輸出格式
-
-```json
-{
-  "weekly_structure": {
-    "trend_state": "UPTREND | DOWNTREND | RANGE | TRANSITION",
-    "structure_type": "ACCUMULATION | DISTRIBUTION | BREAKOUT | BREAKDOWN | LATE_STAGE | NEUTRAL",
-    "key_levels": {"support": 0.0, "resistance": 0.0}
-  },
-  "daily_structure": {
-    "trigger_type": "BREAKOUT | PULLBACK | REVERSAL | CONTINUATION | NONE",
-    "entry_zone": {"low": 0.0, "high": 0.0}
-  },
-  "trap_risk": "NONE | LOW | MEDIUM | HIGH",
-  "trap_type": "BULL_TRAP | BEAR_TRAP | NONE",
-  "structure_confidence": 0.0-1.0
-}
-```
-
----
-
-## 判定原則
-
-1. **先看週線再看日線**：週線定方向，日線定時機
-2. **量能驗證結構**：突破無量 = 假突破風險高
-3. **主力視角優先**：解讀背後意圖，非僅描述型態
+## 相對強度 (§8.4.5)
+RS_Score = Stock_Change% - Index_Change%
+RS > 0 且拒絕下跌的股票 = 下一波行情的領頭羊。

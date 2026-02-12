@@ -1,0 +1,135 @@
+skills:
+  - id: "constitution.ssot_core"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.constitution.ssot_core"
+    class: "SSOTCoreSkill"
+  - id: "constitution.wb1_core"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.constitution.wb1_core"
+    class: "WB1CoreSkill"
+  - id: "constitution.wb2_core"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.constitution.wb2_core"
+    class: "WB2CoreSkill"
+  - id: "constitution.wa_core"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.constitution.wa_core"
+    class: "WACoreSkill"
+  - id: "constitution.dsfp"
+    versions: ["v1"]
+    default: "v1"
+  - id: "constitution.role_calibrator"
+    versions: ["v1"]
+    default: "v1"
+  - id: "rubrics.narrative_link"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.narrative_link"
+    class: "NarrativeLinkRubricSkill"
+  - id: "rubrics.derivative_reading"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.derivative_reading"
+    class: "DerivativeReadingRubricSkill"
+  - id: "rubrics.tech_structure"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.tech_structure"
+    class: "TechStructureRubricSkill"
+  - id: "rubrics.risk_overlay"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.risk_overlay"
+    class: "RiskOverlayRubricSkill"
+  - id: "rubrics.evidence_protocol"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.evidence_protocol"
+    class: "EvidenceProtocolRubricSkill"
+  - id: "rubrics.market_regime"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.market_regime.v1"
+    class: "MarketRegimeSkill"
+  - id: "rubrics.volatility_regime"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.volatility_regime.skill"
+    class: "VolatilityRegimeSkill"
+  - id: "rubrics.correlation_regime"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.correlation_regime.skill"
+    class: "CorrelationRegimeSkill"
+  - id: "rubrics.liquidity_stress"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.liquidity_stress.skill"
+    class: "LiquidityStressSkill"
+  - id: "rubrics.narrative_synthesis"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.narrative_synthesis.skill"
+    class: "NarrativeSynthesisSkill"
+  - id: "rubrics.decision_vector"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.decision_vector.skill"
+    class: "DecisionVectorSkill"
+  - id: "rubrics.strategy_profile"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.strategy_profile.skill"
+    class: "StrategyProfileSkill"
+  - id: "rubrics.order_intent"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.order_intent.skill"
+    class: "OrderIntentSkill"
+  - id: "rubrics.llm_narrative_reviewer"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.llm_narrative_reviewer.skill"
+    class: "LLMNarrativeReviewerSkill"
+  - id: "rubrics.decision_confidence"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.decision_confidence.skill"
+    class: "DecisionConfidenceSkill"
+  - id: "rubrics.position_aggressiveness"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.position_aggressiveness.skill"
+    class: "PositionAggressivenessSkill"
+  - id: "rubrics.trade_horizon"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.trade_horizon.skill"
+    class: "TradeHorizonSkill"
+  - id: "rubrics.meta_decision_summary"
+    versions: ["v1"]
+    default: "v1"
+    module: "nuclear.skills.rubrics.meta_decision_summary.skill"
+    class: "MetaDecisionSummarySkill"
+
+phase_map:
+  wb1: ["constitution.ssot_core", "constitution.wb1_core", "constitution.dsfp", "rubrics.evidence_protocol", "rubrics.narrative_link", "rubrics.market_regime", "rubrics.volatility_regime", "rubrics.correlation_regime", "rubrics.liquidity_stress", "rubrics.narrative_synthesis", "rubrics.decision_vector", "rubrics.llm_narrative_reviewer", "rubrics.decision_confidence", "rubrics.meta_decision_summary"]
+  wa:  ["constitution.ssot_core", "constitution.wa_core", "constitution.dsfp", "rubrics.narrative_link", "rubrics.market_regime", "rubrics.volatility_regime", "rubrics.correlation_regime", "rubrics.liquidity_stress", "rubrics.narrative_synthesis", "rubrics.decision_vector", "rubrics.strategy_profile", "rubrics.llm_narrative_reviewer", "rubrics.decision_confidence", "rubrics.position_aggressiveness", "rubrics.trade_horizon", "rubrics.meta_decision_summary"]
+  wb2: ["constitution.ssot_core", "constitution.wb2_core", "rubrics.risk_overlay", "rubrics.tech_structure", "rubrics.market_regime", "rubrics.volatility_regime", "rubrics.correlation_regime", "rubrics.liquidity_stress", "rubrics.narrative_synthesis", "rubrics.decision_vector", "rubrics.strategy_profile", "rubrics.order_intent", "rubrics.llm_narrative_reviewer", "rubrics.decision_confidence", "rubrics.position_aggressiveness", "rubrics.trade_horizon", "rubrics.meta_decision_summary"]
+  d3:  ["constitution.ssot_core", "rubrics.derivative_reading", "rubrics.tech_structure"]
+  d4:  ["constitution.ssot_core", "rubrics.risk_overlay", "rubrics.derivative_reading"]
+  daily: ["rubrics.narrative_link", "rubrics.evidence_protocol"]
+
+schemas:
+  wb1: 
+    versions: ["v1"]
+    default: "v1"
+    path: "schemas/wb1/v1.json"
+  wb2: 
+    versions: ["v1"]
+    default: "v1"
+    path: "schemas/wb2/v1.json"

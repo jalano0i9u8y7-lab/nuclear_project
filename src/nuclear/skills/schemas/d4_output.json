@@ -1,191 +1,168 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "D4_Output",
-    "description": "D-4 宏觀世界觀統整師輸出格式 (Daily Macro Integrator)",
+    "title": "D4_Worldview_Daily_Output",
+    "description": "D-4 宏觀世界觀統整師每日輸出 (§10.7)",
     "type": "object",
     "required": [
         "date",
-        "macro_snapshot",
-        "identity_shift_signals",
-        "narrative_updates"
+        "sub_world_reports",
+        "d4_final"
     ],
     "properties": {
         "date": {
             "type": "string",
-            "format": "date",
-            "description": "快照日期 (YYYY-MM-DD)"
+            "format": "date"
         },
-        "macro_snapshot": {
-            "type": "object",
-            "required": [
-                "indices",
-                "rates",
-                "commodities",
-                "volatility"
-            ],
-            "properties": {
-                "indices": {
-                    "type": "object",
-                    "properties": {
-                        "spx": {
-                            "type": "object",
-                            "properties": {
-                                "close": {
-                                    "type": "number"
-                                },
-                                "change_pct": {
-                                    "type": "number"
-                                }
-                            }
-                        },
-                        "ndx": {
-                            "type": "object",
-                            "properties": {
-                                "close": {
-                                    "type": "number"
-                                },
-                                "change_pct": {
-                                    "type": "number"
-                                }
-                            }
-                        },
-                        "vix": {
-                            "type": "object",
-                            "properties": {
-                                "close": {
-                                    "type": "number"
-                                },
-                                "level": {
-                                    "enum": [
-                                        "LOW",
-                                        "NORMAL",
-                                        "ELEVATED",
-                                        "EXTREME"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                },
-                "rates": {
-                    "type": "object",
-                    "properties": {
-                        "us_10y": {
-                            "type": "number"
-                        },
-                        "us_2y": {
-                            "type": "number"
-                        },
-                        "yield_curve": {
-                            "enum": [
-                                "NORMAL",
-                                "FLAT",
-                                "INVERTED"
-                            ]
-                        }
-                    }
-                },
-                "commodities": {
-                    "type": "object",
-                    "properties": {
-                        "gold": {
-                            "type": "number"
-                        },
-                        "oil": {
-                            "type": "number"
-                        },
-                        "copper": {
-                            "type": "number"
-                        }
-                    }
-                },
-                "volatility": {
-                    "type": "object",
-                    "properties": {
-                        "vix_term_structure": {
-                            "enum": [
-                                "CONTANGO",
-                                "FLAT",
-                                "BACKWARDATION"
-                            ]
-                        },
-                        "skew_index": {
-                            "type": "number"
-                        }
-                    }
-                }
-            }
-        },
-        "identity_shift_signals": {
+        "sub_world_reports": {
             "type": "array",
-            "description": "僅信號，不裁決身份",
+            "minItems": 12,
+            "maxItems": 12,
+            "description": "12 份宏觀子世界報告",
             "items": {
                 "type": "object",
                 "required": [
-                    "asset",
-                    "signal_type",
-                    "evidence_ids"
+                    "category",
+                    "new_events",
+                    "state_variables",
+                    "historical_linkage",
+                    "local_narrative",
+                    "local_regime_tag"
                 ],
                 "properties": {
-                    "asset": {
-                        "type": "string"
-                    },
-                    "signal_type": {
+                    "category": {
+                        "type": "string",
                         "enum": [
-                            "PRICE_EXTREME",
-                            "FLOW_ABNORMAL",
-                            "DERIVATIVE_SURGE",
-                            "PARTICIPANT_SHIFT",
-                            "RULE_CHANGE"
+                            "Central_Bank",
+                            "Econ_Data",
+                            "Geopolitics",
+                            "Stock_Index",
+                            "Bond_Yield",
+                            "Forex",
+                            "Energy",
+                            "Precious_Metals",
+                            "Industrial_Metals",
+                            "Crypto",
+                            "Fear_Index",
+                            "Institutional_Flow"
                         ]
                     },
-                    "magnitude": {
-                        "enum": [
-                            "LOW",
-                            "MEDIUM",
-                            "HIGH"
-                        ]
-                    },
-                    "evidence_ids": {
+                    "new_events": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "type": "object",
+                            "required": [
+                                "news_id",
+                                "source",
+                                "impact_direction",
+                                "confidence"
+                            ],
+                            "properties": {
+                                "news_id": {
+                                    "type": "string"
+                                },
+                                "source": {
+                                    "type": "string"
+                                },
+                                "impact_direction": {
+                                    "type": "string"
+                                },
+                                "confidence": {
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                }
+                            }
                         }
+                    },
+                    "state_variables": {
+                        "type": "object"
+                    },
+                    "historical_linkage": {
+                        "type": "object",
+                        "required": [
+                            "vs_t1",
+                            "trend"
+                        ],
+                        "properties": {
+                            "vs_t1": {
+                                "type": "string"
+                            },
+                            "trend": {
+                                "type": "string",
+                                "enum": [
+                                    "strengthening",
+                                    "weakening",
+                                    "unchanged",
+                                    "regime_shift_candidate"
+                                ]
+                            }
+                        }
+                    },
+                    "local_narrative": {
+                        "type": "object",
+                        "required": [
+                            "dominant_narrative",
+                            "anti_narrative_flag"
+                        ],
+                        "properties": {
+                            "dominant_narrative": {
+                                "type": "string"
+                            },
+                            "anti_narrative_flag": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "local_regime_tag": {
+                        "type": "string",
+                        "enum": [
+                            "risk_on",
+                            "risk_off",
+                            "neutral",
+                            "unstable"
+                        ]
                     }
                 }
             }
         },
-        "narrative_updates": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "narrative_id": {
+        "d4_final": {
+            "type": "object",
+            "description": "D4-FINAL 總世界觀整合報告",
+            "required": [
+                "dominant_global_regime",
+                "cross_world_conflicts",
+                "regime_stability_score",
+                "key_watch_signals"
+            ],
+            "properties": {
+                "dominant_global_regime": {
+                    "type": "string",
+                    "enum": [
+                        "Bull",
+                        "Bear",
+                        "Range",
+                        "Crisis",
+                        "Transition"
+                    ]
+                },
+                "cross_world_conflicts": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "regime_stability_score": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "key_watch_signals": {
+                    "type": "array",
+                    "items": {
                         "type": "string"
                     },
-                    "update_type": {
-                        "enum": [
-                            "CONTINUATION",
-                            "PIVOT",
-                            "FADE",
-                            "AMPLIFY"
-                        ]
-                    },
-                    "summary": {
-                        "type": "string",
-                        "maxLength": 100
-                    }
+                    "maxItems": 3
                 }
-            }
-        },
-        "weekly_escalation_hint": {
-            "type": "boolean",
-            "description": "是否建議週報層級審查"
-        },
-        "escalation_reasons": {
-            "type": "array",
-            "items": {
-                "type": "string"
             }
         }
     }

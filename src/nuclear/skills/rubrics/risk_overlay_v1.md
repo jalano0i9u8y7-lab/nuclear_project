@@ -1,79 +1,36 @@
-# Risk Overlay Policy v1
-# Version: 1.0
-# Source: V8.0架構定案文檔_SSOT.md (V8.34)
-# Last Updated: 2026-02-05
+# 風險覆蓋層方法論 V1
 
-## 風險覆蓋政策
+## Risk Overlay Level 判定 (§8.4.2)
 
-定義風控規則的優先級與覆寫機制。
+多條件同時存在時：取 max(all triggered levels)。
 
----
+| 條件 | risk_overlay_level | 動作 |
+|------|-------------------|------|
+| P0.7 = Late 或 turning_point_risk = HIGH | 3 | Cat 3 未持倉禁止建倉 |
+| P0.7 Loop_Dominance = BALANCING | 2 | Cat 2 視為 Cat 1 矩陣 |
+| DIVERGENCE_ALERT 或 INVENTORY_BUILD_WARNING | 2 | Cat 2 視為 Cat 1 矩陣 |
+| LATE_CYCLE_RISK | 1 | Buy1 比例 -10% |
+| 無特殊 | 0 | 正常 |
 
-## 三層風控架構
+Risk Overlay 的數值影響僅作用於 Cat 矩陣的調整。
+P4 的 W_ideal 計算不重複考慮 Risk Overlay。（反重複懲罰原則）
 
-### System Level（系統級）
-- DEFCON 1 = 禁止所有新開倉
-- Emergency Exit = 強制平倉
-- LATE_CYCLE + BEARISH = FORCE_MAX_EXPOSURE 30%
+## 規則衝突優先權總表 (§2.5.1)
 
-### Sector Level（板塊級）
-- 板塊曝險上限 30-40%
-- Sector Divergence Alert
-- Industry Phase Out
+覆寫順序（由高到低）：
+1. 生存層（Emergency Exit、DEFCON_1）— 程式強制
+2. 系統風控層（P0.7 Time Window Override、DEFCON ≤ 2）
+3. 市場氣候層（Market Climate Override）
+4. 配置層（P4 Allocation、Portfolio Correlation Lock、IDENTITY_DRIFT）
+5. 學習層（Learning constraints override strategy preferences）
+6. 進攻層（牛市加速器、Alpha 放大器）
+7. 策略層（WB-2 個股策略）
+8. 個股買入層
 
-### Symbol Level（個股級）
-- Safety Lock（死亡率 > 0.5）
-- Insider Selling Alert
-- Earnings Ejection（財報前 7 天）
+## Cat 3 分級處理 (§8.4.1a)
 
----
-
-## 優先級規則
-
-**覆寫順序**（由高到低）：
-
-1. **Hard Constraints**（程式強制，AI 無法繞過）
-   - 數學邊界
-   - defcon1
-   - emergencyExit
-   - Safety Lock
-
-2. **Market Climate Override**
-   - P0.7 = LATE_CYCLE + 世界觀 = BEARISH → 強制覆寫
-
-3. **P4 配置**
-   - Portfolio Correlation Lock
-   - IDENTITY_DRIFT 降 U
-   - P4 Allocation
-
-4. **Learning / Safety Lock**
-   - Learning constraints override strategy preferences
-   - 情境記憶死亡率 > 0.5 → max_exposure 上限
-
-5. **P5 策略**
-   - WB-2 個股策略
-   - 權重與掛單
-
-6. **Individual Buy**
-   - 個股買入決策
-
----
-
-## 核心原則
-
-**更嚴格者優先**：當多條規則衝突時，執行更嚴格的限制。
-
----
-
-## 輸出格式
-
-```json
-{
-  "active_overlays": [
-    {"level": "SYSTEM | SECTOR | SYMBOL", "rule": "規則名稱", "effect": "具體限制"}
-  ],
-  "effective_max_exposure": 0.0-1.0,
-  "blocked_actions": ["BUY_NEW", "INCREASE_POSITION"],
-  "reason": "觸發原因摘要"
-}
-```
+| 情境 | 處理 |
+|------|------|
+| Cat 3 未持倉 | W_ideal = 0，不新建倉位（鐵律） |
+| Cat 3 已持倉 — INDEPENDENT_ALPHA | 減倉 25%，剩餘 trailing stop 12% |
+| Cat 3 已持倉 — 一般 | 減倉 50%，剩餘嚴格停損 |

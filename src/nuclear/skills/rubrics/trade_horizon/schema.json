@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "TradeHorizonResult",
+    "type": "object",
+    "properties": {
+        "horizon": {
+            "type": "string",
+            "enum": [
+                "intraday",
+                "multi_day",
+                "multi_week"
+            ]
+        }
+    },
+    "required": [
+        "horizon"
+    ]
+}

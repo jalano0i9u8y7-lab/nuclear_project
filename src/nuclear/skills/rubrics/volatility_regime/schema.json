@@ -1,0 +1,120 @@
+    "required": [
+        "regime",
+        "vix",
+        "confidence",
+        "future_projection",
+        "falsification_checkpoints",
+        "verification_timeline"
+    ],
+    "definitions": {
+        "FutureProjection": {
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "type": "string"
+                },
+                "time_window": {
+                    "type": "string"
+                },
+                "confidence": {
+                    "type": "number"
+                },
+                "key_drivers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "alternative_scenarios": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "direction",
+                "time_window"
+            ]
+        },
+        "FalsificationCheckpoint": {
+            "type": "object",
+            "properties": {
+                "signal": {
+                    "type": "string"
+                },
+                "condition": {
+                    "type": "string"
+                },
+                "timeline": {
+                    "type": "string"
+                },
+                "severity": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "signal",
+                "condition",
+                "timeline"
+            ]
+        },
+        "VerificationTimeline": {
+            "type": "object",
+            "properties": {
+                "next_review_date": {
+                    "type": "string"
+                },
+                "confidence_decay_rate": {
+                    "type": "number"
+                },
+                "recheck_triggers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "next_review_date"
+            ]
+        }
+    },
+    "properties": {
+        "regime": {
+            "type": "string",
+            "enum": [
+                "crisis_volatility",
+                "high_volatility",
+                "normal_volatility"
+            ]
+        },
+        "vix": {
+            "type": "number"
+        },
+        "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+        },
+        "future_projection": {
+            "$ref": "#/definitions/FutureProjection"
+        },
+        "falsification_checkpoints": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/FalsificationCheckpoint"
+            },
+            "minItems": 1
+        },
+        "verification_timeline": {
+            "$ref": "#/definitions/VerificationTimeline"
+        },
+        "failure_modes": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

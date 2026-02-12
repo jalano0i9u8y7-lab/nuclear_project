@@ -1,0 +1,53 @@
+{
+    "title": "WB2Order",
+    "type": "object",
+    "properties": {
+        "ticker": {
+            "type": "string"
+        },
+        "worldview_version": {
+            "type": "string"
+        },
+        "identity_context": {
+            "type": "object",
+            "properties": {
+                "asset_id": {
+                    "type": "string"
+                },
+                "identity_label": {
+                    "type": "string"
+                },
+                "narrative": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "asset_id",
+                "identity_label"
+            ]
+        },
+        "action": {
+            "type": "string"
+        },
+        "buy_ladder": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            }
+        },
+        "sell_ladder": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            }
+        },
+        "parameter_adjustment": {
+            "type": "object"
+        }
+    },
+    "required": [
+        "ticker",
+        "worldview_version",
+        "identity_context"
+    ]
+}
