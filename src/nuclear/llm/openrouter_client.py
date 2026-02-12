@@ -23,9 +23,10 @@ class OpenRouterClient(BaseLLMClient):
     Strictly opt-in via NUCLEAR_LLM_NETWORK env var check at Router level (enforced by caller usually, but we assume router handles it).
     This class performs the actual network call.
     """
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, model: Optional[str] = None, provider_order: Optional[list] = None):
         self.api_key = api_key
-        self.model = os.environ.get("OPENROUTER_MODEL", DEFAULT_MODEL)
+        self.model = model or os.environ.get("OPENROUTER_MODEL", DEFAULT_MODEL)
+        self.provider_order = provider_order
         self.base_url = os.environ.get("OPENROUTER_BASE_URL", DEFAULT_BASE_URL)
         self.timeout = int(os.environ.get("NUCLEAR_LLM_TIMEOUT_SECONDS", DEFAULT_TIMEOUT))
         self.max_tokens = int(os.environ.get("NUCLEAR_LLM_MAX_OUTPUT_TOKENS", DEFAULT_MAX_TOKENS))
@@ -62,13 +63,22 @@ class OpenRouterClient(BaseLLMClient):
             "max_tokens": self.max_tokens
         }
         
+        # Add provider routing if specified
+        if self.provider_order:
+            payload["provider"] = {
+                "order": self.provider_order,
+                "allow_fallbacks": False
+            }
+        
         # DEBUG: Log request details
         log.info("openrouter_request", 
                  url=f"{self.base_url}/chat/completions",
                  model=self.model,
+                 provider=self.provider_order,
                  payload_keys=list(payload.keys()))
         print(f"DEBUG URL: {self.base_url}/chat/completions")
         print(f"DEBUG Model: {self.model}")
+        print(f"DEBUG Provider: {self.provider_order}")
         print(f"DEBUG Payload: {json.dumps(payload, indent=2)}")
         
         try:
