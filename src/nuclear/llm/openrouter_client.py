@@ -62,6 +62,15 @@ class OpenRouterClient(BaseLLMClient):
             "max_tokens": self.max_tokens
         }
         
+        # DEBUG: Log request details
+        log.info("openrouter_request", 
+                 url=f"{self.base_url}/chat/completions",
+                 model=self.model,
+                 payload_keys=list(payload.keys()))
+        print(f"DEBUG URL: {self.base_url}/chat/completions")
+        print(f"DEBUG Model: {self.model}")
+        print(f"DEBUG Payload: {json.dumps(payload, indent=2)}")
+        
         try:
             with httpx.Client(timeout=self.timeout) as client:
                 resp = client.post(
